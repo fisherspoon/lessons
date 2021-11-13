@@ -2,22 +2,50 @@
   <div class="form-wrapper">
     <div class="row">
       <div class="col-6">
-        <pre>{{form}}</pre>
-        <form @submit.prevent>
+        <div v-if="successSubmit" class="success-submit">
+          <div class="mb-3">
+            <h2>Форма успешно отправлена!</h2>
+          </div>
+        </div>
+        <div v-if="errorSubmit" class="success-submit">
+          <div class="mb-3">
+            <h2>Ошибка отправки формы!</h2>
+          </div>
+        </div>
+        <form v-if="!successSubmit && !errorSubmit" @submit.prevent>
+          <slot name="header"/>
           <div class="mb-3">
             <VInput
-               :id="name.id"
                :label="name.labelName"
                :value.sync="form.name"
-               @input.native="validateInput('name', form.name)"
             />
           </div>
           <div class="mb-3">
             <VInput
-                :id="surName.id"
                 :label="surName.labelName"
                 :value.sync="form.surName"
-                @input.native="validateInput('surName', form.surName)"
+            />
+          </div>
+          <div class="mb-3">
+            <VInput
+                :label="email.labelName"
+                :value.sync="form.email"
+            />
+          </div>
+          <div class="mb-3">
+            <VRadio
+                v-for="item in radio"
+                :value="item.value"
+                :label="item.name"
+                v-model="radioStatus"
+                @click.native="form.gender = item.value"
+            />
+          </div>
+          <div class="mb-3">
+            <VSelect
+                :defaultProp.sync="customSelect.byDefault"
+                :by-default="customSelect.byDefault"
+                :options="customSelect.options"
             />
           </div>
           <div class="mb-3 form-check">
@@ -25,10 +53,8 @@
                 :id="agreement.id"
                 :label="agreement.labelName"
                 :checked.sync="form.isChecked"
-                @input.native="validateInput('checkbox', form.isChecked)"
             />
           </div>
-
           <div class="mb-3">
             <div class="errors" v-if="errors.length">
               <p><b>Пожалуйста исправьте указанные ошибки:</b></p>
@@ -52,7 +78,9 @@
 
 <script>
 import VInput from "@/components/molecules/VInput";
+import VSelect from "@/components/molecules/VSelect";
 import VCheckbox from "@/components/molecules/VCheckbox";
+import VRadio from "@/components/molecules/VRadio";
 import VButton from "@/components/molecules/VButton";
 
 export default {
@@ -62,21 +90,54 @@ export default {
   },
   data(){
     return{
+      successSubmit: false,
+      errorSubmit: false,
       form:{
         name: '',
         surName: '',
+        email: '',
+        lang: '',
+        gender: '',
         isChecked: false
       },
       name:{
-          id: 1,
           labelName: 'Введите имя',
       },
       surName:{
-        id: 2,
         labelName: 'Введите фамилию',
       },
+      email:{
+        labelName: 'Введите email',
+      },
+      customSelect:{
+        byDefault: 'Выберите язык',
+        options:[
+          {
+            value: 'uk',
+            name: 'Украинский'
+          },
+          {
+            value: 'ru',
+            name: 'Руский'
+          },
+          {
+            value: 'en',
+            name: 'Английский'
+          },
+        ]
+      },
+      radioStatus: '',
+      radio:[
+        {
+          value: 'male',
+          name: 'Мужчина'
+        },
+        {
+          value: 'female',
+          name: 'Женщина'
+        }
+      ],
       agreement:{
-        id: 3,
         labelName: 'Подтвердите согласие',
       },
       customButton:{
@@ -89,28 +150,37 @@ export default {
   },
   components:{
     VInput,
+    VSelect,
     VCheckbox,
+    VRadio,
     VButton,
   },
   methods:{
+    asd(lang){
+      this.form.lang = lang
+    },
     registration(){
       this.checkForm();
       if(!this.errors.length){
-        console.log(this.form)
+      this.customButton.name = 'Идет отправка'
+        setTimeout(()=>{
+          this.successSubmit = true;
+          // this.errorSubmit = true;
+          console.log(this.form.name)
+          console.log(this.form.surName)
+          console.log(this.form.email)
+          console.log(this.form.lang)
+          console.log(this.form.gender)
+          console.log(this.form.isChecked)
+        }, 2000)
       }
     },
     checkForm(){
       this.errors = [];
-      if(!this.form.name){
+      if(!this.form.email){
         this.errors.push({
-          type: 'name',
-          text: 'Укажите имя.'
-        });
-      }
-      if(!this.form.surName){
-        this.errors.push({
-          type: 'surName',
-          text: 'Укажите фамилию.'
+          type: 'email',
+          text: 'Укажите email.'
         });
       }
       if(!this.form.isChecked){
@@ -120,33 +190,12 @@ export default {
         });
       }
     },
-    validateInput(type, currentValue){
-      switch (type){
-        case 'name':
-
-          currentValue ? this.errors.splice(this.findIndexError('name'), 1) : this.errors.push({
-            type: 'name',
-            text: 'Укажите имя.'
-          });
-          break;
-        case 'surName':
-          currentValue ? this.errors.splice(this.findIndexError('surName'), 1) : this.errors.push({
-            type: 'surName',
-            text: 'Укажите фамилию.'
-          });
-          break;
-        case 'checkbox':
-          currentValue ? this.errors.splice(this.findIndexError('checkbox'), 1) : this.errors.push({
-            type: 'checkbox',
-            text: 'Подтвердите выбор.'
-          });
-          break;
-      }
-    },
-    findIndexError(name){
-      return this.errors.findIndex(item => item.type === name)
-    }
   },
+  watch: {
+    'customSelect.byDefault': function (newVal) {
+      this.form.lang = newVal
+    },
+  }
 }
 </script>
 

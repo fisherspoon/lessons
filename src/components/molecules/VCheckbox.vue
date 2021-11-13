@@ -1,17 +1,17 @@
 <template>
   <div class="wrapper-checkbox">
     <label
-        :for="'custom-checkbox' + id"
+        for="custom-checkbox"
         class="form-check-label">
       {{ label }}
-    </label>
     <input
-        :id="'custom-input' + id"
+        id="custom-checkbox"
         class="form-check-input"
         type="checkbox"
         :checked="value"
         @input="$emit('update:checked', $event.target.checked)"
     >
+    </label>
   </div>
 </template>
 
@@ -20,10 +20,6 @@ export default {
   name: 'CRadio',
   inheritAttrs: false,
   props:{
-    id:{
-      type: Number,
-      required: true
-    },
     label:{
       type: String,
       default: 'Checkbox name'
@@ -33,7 +29,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .wrapper-checkbox{
   text-align: left;
 }

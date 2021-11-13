@@ -21,7 +21,11 @@
 
             </div>
             <div v-else-if="item === 'form'">
-             <VForm/>
+             <VForm>
+               <template v-slot:header>
+                 <h2>{{ formHeader }}</h2>
+               </template>
+             </VForm>
             </div>
             <div v-else>
               2
@@ -44,7 +48,7 @@ export default {
   name: 'App',
   data(){
     return{
-      currentTab: 0,
+      currentTab: 1,
       changedBgColor: '',
       tabsBtn: [
         'Custom Select',
@@ -57,7 +61,7 @@ export default {
         'todo-list'
       ],
       customSelect: {
-        byDefault: '',
+        byDefault: 'Выберите город',
         options:[
           {
             value: 'Kiev',
@@ -72,7 +76,8 @@ export default {
             name: 'Харьков'
           },
         ]
-      }
+      },
+      formHeader: 'Форма регистрации'
     }
   },
   components: {

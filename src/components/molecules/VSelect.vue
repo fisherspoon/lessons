@@ -2,7 +2,7 @@
   <div class="wrapper-select">
     <div
         @click="isShow = !isShow"
-        class="selected-value"
+        class="selected-value form-control"
     >
       {{ byDefault }}
 
@@ -30,7 +30,7 @@
     name: 'VSelect',
     props:{
       byDefault:{
-        type: Object,
+        type: String,
         default: 'Выберите значение'
       },
       options:{
@@ -55,14 +55,13 @@
 <style lang="scss" scoped>
   .wrapper-select{
     width: 320px;
-    height: 48px;
-    border: 1px solid #ccc;
+    position: relative;
     .selected-value{
       display: flex;
-      height: inherit;
       align-items: center;
       padding-left: 12px;
       justify-content: space-between;
+      height: 38px;
       &:hover{
         cursor: pointer;
       }
@@ -75,9 +74,14 @@
       padding: 0;
       border: 1px solid #ccc;
       margin: 3px 0 0 0;
+      background: #fff;
       &.shown{
         display: flex;
+        width: 320px;
         flex-direction: column;
+        position: absolute;
+        z-index: 1;
+        left: -1px;
       }
       li{
         text-align: left;

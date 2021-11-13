@@ -1,16 +1,16 @@
 <template>
   <div class="wrapper-input">
     <label
-        :for="'custom-input' + id"
+        for="custom-input"
         class="form-label">
       {{ label }}
-    </label>
     <input
-        :id="'custom-input' + id"
+        id="custom-input"
         class="form-control"
         type="text"
         @input="$emit('update:value', $event.target.value)"
     >
+    </label>
   </div>
 </template>
 
@@ -18,10 +18,6 @@
   export default {
     name: 'VInput',
     props:{
-      id:{
-        type: Number,
-        required: true
-      },
       label:{
         type: String,
         default: 'Input name'
@@ -34,5 +30,8 @@
 <style lang="scss" scoped>
 .wrapper-input{
   text-align: left;
+  .form-label{
+    width: 100%;
+  }
 }
 </style>
