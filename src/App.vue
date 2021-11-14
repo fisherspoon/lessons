@@ -28,11 +28,9 @@
              </VForm>
             </div>
             <div v-else>
-              2
+              <TodoList/>
             </div>
           </div>
-
-
         </div>
       </div>
 
@@ -43,12 +41,14 @@
 <script>
 import VSelect from "@/components/molecules/VSelect";
 import VForm from "@/components/VForm";
+import VTodoList from "@/components/VTodoList";
+import TodoList from "@/components/VTodoList";
 
 export default {
   name: 'App',
   data(){
     return{
-      currentTab: 1,
+      currentTab: 2,
       changedBgColor: '',
       tabsBtn: [
         'Custom Select',
@@ -81,7 +81,8 @@ export default {
     }
   },
   components: {
-    VSelect, VForm
+    TodoList,
+    VSelect, VForm, VTodoList
   },
 }
 </script>

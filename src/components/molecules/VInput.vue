@@ -8,6 +8,7 @@
         id="custom-input"
         class="form-control"
         type="text"
+        :value="value"
         @input="$emit('update:value', $event.target.value)"
     >
     </label>
@@ -21,6 +22,10 @@
       label:{
         type: String,
         default: 'Input name'
+      },
+      value:{
+        type: String,
+        default: ''
       },
     }
   }

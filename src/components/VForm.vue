@@ -2,16 +2,12 @@
   <div class="form-wrapper">
     <div class="row">
       <div class="col-6">
-        <div v-if="successSubmit" class="success-submit">
-          <div class="mb-3">
-            <h2>Форма успешно отправлена!</h2>
-          </div>
-        </div>
-        <div v-if="errorSubmit" class="success-submit">
-          <div class="mb-3">
-            <h2>Ошибка отправки формы!</h2>
-          </div>
-        </div>
+        <VSuccessSend
+          :success-submit="successSubmit"
+        />
+        <VErrorSend
+          :error-submit="errorSubmit"
+        />
         <form v-if="!successSubmit && !errorSubmit" @submit.prevent>
           <slot name="header"/>
           <div class="mb-3">
@@ -82,6 +78,8 @@ import VSelect from "@/components/molecules/VSelect";
 import VCheckbox from "@/components/molecules/VCheckbox";
 import VRadio from "@/components/molecules/VRadio";
 import VButton from "@/components/molecules/VButton";
+import VSuccessSend from "@/components/VSuccessSend";
+import VErrorSend from "@/components/VErrorSend";
 
 export default {
   name: 'VForm',
@@ -154,18 +152,17 @@ export default {
     VCheckbox,
     VRadio,
     VButton,
+    VSuccessSend,
+    VErrorSend,
   },
   methods:{
-    asd(lang){
-      this.form.lang = lang
-    },
     registration(){
       this.checkForm();
       if(!this.errors.length){
       this.customButton.name = 'Идет отправка'
         setTimeout(()=>{
-          this.successSubmit = true;
-          // this.errorSubmit = true;
+          // this.successSubmit = true;
+          this.errorSubmit = true;
           console.log(this.form.name)
           console.log(this.form.surName)
           console.log(this.form.email)
