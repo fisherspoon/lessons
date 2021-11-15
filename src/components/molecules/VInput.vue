@@ -1,13 +1,13 @@
 <template>
   <div class="wrapper-input">
     <label
-        for="custom-input"
+        :for="'custom-input' + label"
         class="form-label">
       {{ label }}
     <input
-        id="custom-input"
+        :id="'custom-input' + label"
         class="form-control"
-        type="text"
+        :type="typeInput"
         :value="value"
         @input="$emit('update:value', $event.target.value)"
     >
@@ -27,6 +27,10 @@
         type: String,
         default: ''
       },
+      typeInput:{
+        type: String,
+        default: 'text'
+      }
     }
   }
 

@@ -31,6 +31,7 @@
           <div class="mb-3">
             <VRadio
                 v-for="item in radio"
+                :key="item.value"
                 :value="item.value"
                 :label="item.name"
                 v-model="radioStatus"
@@ -173,6 +174,7 @@ export default {
       }
     },
     checkForm(){
+      //проверить на наличие ошибок
       this.errors = [];
       if(!this.form.email){
         this.errors.push({
