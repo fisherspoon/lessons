@@ -206,46 +206,37 @@ import VModal from "@/components/VModal";
      },
      userLogin(){
        //логика для формы входа
-      let filterByLogin = this.users.filter((item) => item.login === this.form.loginValue);
-      let filterByPassword = this.users.filter((item) => item.password === this.form.passwordValue);
-      this.checkForm(filterByLogin, filterByPassword);
+       this.checkForm(this.form.loginValue, this.form.passwordValue);
 
-      if(!this.errors.length){
-        if(filterByLogin.length > 0 && filterByPassword.length > 0){
-          this.showModal = false;
-          this.currentUser = filterByLogin[0].login;
-          let tasksByUser = JSON.parse(localStorage.getItem(this.currentUser));
-          !tasksByUser ? this.tasks = [] : this.tasks = tasksByUser;
-        }
-      }
+       if(!this.errors.length){
+         this.showModal = false;
+         this.currentUser = this.form.loginValue;
+         let tasksByUser = JSON.parse(localStorage.getItem(this.currentUser));
+         !tasksByUser ? this.tasks = [] : this.tasks = tasksByUser;
+       }
      },
      checkForm(login, pass){
        //проверка на ошибки в форме
-       console.log(login)
-       console.log(pass)
+       let compareLoginWithPass = this.users.filter((item) => {
+         return item.login === login && item.password === pass
+       });
        this.errors = [];
-       if(!this.form.loginValue){
+       if(!login){
          this.errors.push({
            type: 'login',
            text: 'Введите логин.'
          });
        }
-       if(!this.form.passwordValue){
+       if(!pass){
          this.errors.push({
            type: 'password',
            text: 'Введите пароль.'
          });
        }
-       if(login.length === 0 && pass.length === 0 && (this.form.loginValue !== '' && this.form.passwordValue !== '')){
+       if(compareLoginWithPass.length === 0 && (login.length > 0 && pass.length > 0)){
          this.errors.push({
            type: 'not-found',
            text: 'Пользователь не найден.'
-         });
-       }
-       if(login.length > 0 && pass.length === 0){
-         this.errors.push({
-           type: 'not-allow-pass',
-           text: 'Не верный пароль.'
          });
        }
      },

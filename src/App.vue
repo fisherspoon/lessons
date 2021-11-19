@@ -48,7 +48,7 @@ export default {
   name: 'App',
   data(){
     return{
-      currentTab: 2,
+      currentTab: 0,
       changedBgColor: '',
       tabsBtn: [
         'Custom Select',
