@@ -1,13 +1,13 @@
 <template>
-  <div class="modal-overlay">
-    <div class="modal">
-      <div class="layer">
-        <div class="content">
-          <slot name="form"></slot>
+    <div class="modal-overlay">
+      <div class="modal">
+        <div class="layer">
+          <div class="content">
+            <slot name="form"></slot>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>

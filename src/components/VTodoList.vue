@@ -1,9 +1,10 @@
 <template>
   <div>
-    <VModal
-        v-if="showModal"
-        :is-show-modal="showModal"
-    >
+    <transition name="fade" appear>
+      <VModal
+          v-if="isShowModal"
+          :is-show-modal="isShowModal"
+      >
       <template v-slot:form>
         <form @submit.prevent>
           <div class="col-12">
@@ -37,7 +38,8 @@
         </form>
       </template>
     </VModal>
-    <div v-if="!showModal" class="todo-wrapper">
+    </transition>
+    <div v-if="!isShowModal" class="todo-wrapper">
     <div class="row">
         <VButton
             :custom-type="btnChangeUser.type"
@@ -57,6 +59,7 @@
               :label="taskImage.labelName"
               :value.sync="taskImage.value"
           />
+          <p class="error" ref="error">Допустимые форматы изображений - .png, .jpg</p>
         </div>
         <div class="mb-3">
           <VTextArea
@@ -68,21 +71,39 @@
             :custom-type="btnAddTask.type"
             :name="btnAddTask.name"
             :custom-class-btn="btnAddTask.classBtn"
-            @click.native="addTask"
+            @click.native="validateImgExtension(taskImage.value); addTask()"
         />
       </div>
     </div>
     <div class="line"></div>
     <div class="row">
       <div class="col-12">
-        <VTask
-         v-for="(item, index) in tasks"
-         :key="item.url + index"
-         :task="item"
-         @done="doneTask"
-         @edit="editTask"
-         @remove="removeTask"
-        />
+        <div class="row">
+          <div class="col-4 btns-container">
+          <VButton
+              :custom-type="rowBtn.type"
+              :name="rowBtn.name"
+              :custom-class-btn="rowBtn.classBtn"
+              @click.native="rows = true; cols = false"
+          />
+          <VButton
+              :custom-type="colBtn.type"
+              :name="colBtn.name"
+              :custom-class-btn="colBtn.classBtn"
+              @click.native="cols = true; rows = false"
+          />
+          </div>
+        </div>
+        <transition-group name="fade" tag="div" class="flexibleBlocks" :class="{'rows': rows, 'cols': cols}">
+          <VTask
+           v-for="(item, index) in tasks"
+           :key="item.url + index"
+           :task="item"
+           @done="doneTask"
+           @edit="editTask"
+           @remove="removeTask"
+          />
+        </transition-group>
       </div>
     </div>
   </div>
@@ -97,11 +118,21 @@ import VTextArea from "@/components/molecules/VTextArea";
 import VButton from "@/components/molecules/VButton";
 import VTask from "@/components/VTask";
 import VModal from "@/components/VModal";
+import validateImgExtension from "@/components/mixins/validateImgExtension";
 
  export default {
    name: 'TodoList',
+   props:{
+     isShowModal:{
+       type: Boolean,
+       required: true
+     }
+   },
    data(){
     return{
+      isValid: null,
+      cols: true,
+      rows: false,
       form:{
         labelLogin: 'Введите логин',
         loginValue: '',
@@ -113,7 +144,7 @@ import VModal from "@/components/VModal";
       users: [
         {
           login: 'Alex',
-          password: 'q'
+          password: 'qwerty'
         },
         {
           login: 'Nick',
@@ -122,7 +153,6 @@ import VModal from "@/components/VModal";
       ],
       currentUser: '',
       tasks:[],
-      showModal: true,
       taskName: {
         value: '',
         labelName: 'Введите название задачи',
@@ -150,8 +180,19 @@ import VModal from "@/components/VModal";
         name: 'Сменить пользователя',
         classBtn: 'btn-warning'
       },
+      rowBtn:{
+        type: 'button',
+        name: 'В строку по 3',
+        classBtn: 'btn-primary'
+      },
+      colBtn:{
+        type: 'button',
+        name: 'В колонку',
+        classBtn: 'btn-primary'
+      }
     }
    },
+   mixins: [validateImgExtension],
    components:{
      VInput,
      VTextArea,
@@ -161,24 +202,27 @@ import VModal from "@/components/VModal";
    },
    methods:{
      addTask(){
-       //добавление задачи
-       let task = {
-         title: this.taskName.value,
-         url: this.taskImage.value,
-         description: this.taskDescription.value,
-         done: false,
-         isDone: false,
-         edit: false,
-         isEdit: false,
-         remove: false,
-         timeCreated: (format(new Date(), 'yyyy-MM-dd HH:mm:ss'))
-       };
-       this.appendToStorage(this.currentUser, task);
-       this.tasks = this.getTaskByUser()
+       if(this.isValid){
+         console.log('valid')
+         //добавление задачи
+         let task = {
+           title: this.taskName.value,
+           url: this.taskImage.value,
+           description: this.taskDescription.value,
+           done: false,
+           isDone: false,
+           edit: false,
+           isEdit: false,
+           remove: false,
+           timeCreated: (format(new Date(), 'yyyy-MM-dd HH:mm:ss'))
+         };
+         this.appendToStorage(this.currentUser, task);
+         this.tasks = this.getTaskByUser()
 
-       this.taskName.value = '';
-       this.taskImage.value = '';
-       this.taskDescription.value = '';
+         this.taskName.value = '';
+         this.taskImage.value = '';
+         this.taskDescription.value = '';
+       }
      },
      doneTask(task){
        //статус для выполненной задачи
@@ -206,46 +250,37 @@ import VModal from "@/components/VModal";
      },
      userLogin(){
        //логика для формы входа
-      let filterByLogin = this.users.filter((item) => item.login === this.form.loginValue);
-      let filterByPassword = this.users.filter((item) => item.password === this.form.passwordValue);
-      this.checkForm(filterByLogin, filterByPassword);
+      this.checkForm(this.form.loginValue, this.form.passwordValue);
 
       if(!this.errors.length){
-        if(filterByLogin.length > 0 && filterByPassword.length > 0){
-          this.showModal = false;
-          this.currentUser = filterByLogin[0].login;
+          this.$emit('login', this.isShowModal)
+          this.currentUser = this.form.loginValue;
           let tasksByUser = JSON.parse(localStorage.getItem(this.currentUser));
           !tasksByUser ? this.tasks = [] : this.tasks = tasksByUser;
-        }
       }
      },
      checkForm(login, pass){
        //проверка на ошибки в форме
-       console.log(login)
-       console.log(pass)
+       let compareLoginWithPass = this.users.filter((item) => {
+         return item.login === login && item.password === pass
+       });
        this.errors = [];
-       if(!this.form.loginValue){
+       if(!login){
          this.errors.push({
            type: 'login',
            text: 'Введите логин.'
          });
        }
-       if(!this.form.passwordValue){
+       if(!pass){
          this.errors.push({
            type: 'password',
            text: 'Введите пароль.'
          });
        }
-       if(login.length === 0 && pass.length === 0 && (this.form.loginValue !== '' && this.form.passwordValue !== '')){
+       if(compareLoginWithPass.length === 0 && (login.length > 0 && pass.length > 0)){
          this.errors.push({
            type: 'not-found',
            text: 'Пользователь не найден.'
-         });
-       }
-       if(login.length > 0 && pass.length === 0){
-         this.errors.push({
-           type: 'not-allow-pass',
-           text: 'Не верный пароль.'
          });
        }
      },
@@ -254,7 +289,7 @@ import VModal from "@/components/VModal";
        this.form.loginValue = '';
        this.form.passwordValue = '';
        this.currentUser = '';
-       this.showModal = true;
+       this.$emit('change-user', this.isShowModal)
      },
      appendToStorage(name, data){
        //добавить новую задачу в нужный объект в storage
@@ -278,7 +313,24 @@ import VModal from "@/components/VModal";
  }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .5s linear;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .5s linear;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
   .line{
     border: 1px solid #ccc;
     margin: 50px 0;
@@ -300,5 +352,30 @@ import VModal from "@/components/VModal";
         margin-bottom: 12px;
       }
     }
+  }
+  .btns-container{
+    display: flex;
+    grid-gap: 16px;
+    margin-bottom: 36px;
+  }
+  .error{
+    display: none;
+    color: crimson;
+  }
+  .rows{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 16px;
+    .controls-container{
+      flex-direction: column;
+      .btn-group{
+        flex-direction: column;
+      }
+    }
+  }
+  .cols{
+    display: flex;
+    flex-direction: column;
+    grid-gap: 16px;
   }
 </style>

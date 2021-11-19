@@ -4,7 +4,7 @@
       <div class="tabs-container">
         <div class="buttons-container">
           <button
-              @click="currentTab = index"
+              @click="currentTab = index; index === 2 ? isShowModal = true : ''"
               v-for="(item, index) in tabsBtn" :key="item + index" :class="{'active' : index === currentTab}"
           >
             {{item}}
@@ -12,23 +12,20 @@
         </div>
         <div class="content-container">
           <div class="tab" :class="[ {'active' : index === currentTab}, changedBgColor ]" v-for="(item, index) in tabsContent" :key="item + index">
-            <div v-if="item === 'custom-select'">
-              <VSelect
-                  :defaultProp.sync="customSelect.byDefault"
-                  :by-default="customSelect.byDefault"
-                  :options="customSelect.options"
-              />
-
+            <div v-if="item === 'directives'">
+              <afterLoop/>
+              <hr>
+              <class-builder/>
             </div>
-            <div v-else-if="item === 'form'">
-             <VForm>
-               <template v-slot:header>
-                 <h2>{{ formHeader }}</h2>
-               </template>
-             </VForm>
+            <div v-else-if="item === 'slider'">
+              <v-slider/>
             </div>
             <div v-else>
-              <TodoList/>
+              <VTodoList
+               :is-show-modal="isShowModal"
+               @login="isShowModal = false"
+               @change-user="isShowModal = true"
+              />
             </div>
           </div>
         </div>
@@ -39,50 +36,35 @@
 </template>
 
 <script>
-import VSelect from "@/components/molecules/VSelect";
-import VForm from "@/components/VForm";
+import afterLoop from "@/components/VLoopDirective";
+import classBuilder from "@/components/VClassBuilderDerective";
+import vSlider from "@/components/VSlider"
 import VTodoList from "@/components/VTodoList";
-import TodoList from "@/components/VTodoList";
 
 export default {
   name: 'App',
   data(){
     return{
-      currentTab: 2,
+      currentTab: 0,
       changedBgColor: '',
+      isShowModal: false,
       tabsBtn: [
-        'Custom Select',
-        'Form',
+        'Directives',
+        'Slider',
         'Todo List'
       ],
       tabsContent: [
-        'custom-select',
-        'form',
+        'directives',
+        'slider',
         'todo-list'
       ],
-      customSelect: {
-        byDefault: 'Выберите город',
-        options:[
-          {
-            value: 'Kiev',
-            name: 'Киев'
-          },
-          {
-            value: 'Lviv',
-            name: 'Львов'
-          },
-          {
-            value: 'Kharkiv',
-            name: 'Харьков'
-          },
-        ]
-      },
-      formHeader: 'Форма регистрации'
     }
   },
   components: {
-    TodoList,
-    VSelect, VForm, VTodoList
+    afterLoop,
+    classBuilder,
+    vSlider,
+    VTodoList
   },
 }
 </script>
