@@ -1,13 +1,22 @@
 <template>
-  <div class="modal-overlay">
+  <transition name="fade" appear>
+    <div class="modal-overlay" v-if="isShowModal" @click.self="closeModal">
     <div class="modal">
       <div class="layer">
         <div class="content">
           <slot name="form"></slot>
+          <div class="btn-group">
+            <div class="row">
+              <div class="col-12">
+                <button class="btn btn-primary" @click="closeModal">Закрыть окно</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
+  </transition>
 </template>
 
 <script>
@@ -17,6 +26,11 @@
      isShowModal:{
        type: Boolean,
        required: true
+     }
+   },
+   methods:{
+     closeModal(){
+       this.$emit('close-modal')
      }
    }
  }
@@ -70,5 +84,14 @@
       padding: 24px 0;
     }
   }
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .4s linear;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -12,23 +12,38 @@
         </div>
         <div class="content-container">
           <div class="tab" :class="[ {'active' : index === currentTab}, changedBgColor ]" v-for="(item, index) in tabsContent" :key="item + index">
-            <div v-if="item === 'custom-select'">
-              <VSelect
-                  :defaultProp.sync="customSelect.byDefault"
-                  :by-default="customSelect.byDefault"
-                  :options="customSelect.options"
-              />
-
+            <div v-if="item === 'hop-form'">
+              <div class="row">
+                <div class="col-3">
+                  <VForm>
+                    <template v-slot:form-content>
+                      <VInput
+                          :type-input="form.simpleInputName.typeInput"
+                          :value.sync="form.simpleInputName.value"
+                          :label="form.simpleInputName.label"
+                      />
+                      <VInput
+                          :type-input="form.simpleInputSurname.typeInput"
+                          :value.sync="form.simpleInputSurname.value"
+                          :label="form.simpleInputSurname.label"
+                      />
+                      <VBtnData
+                          :input-name="form.simpleInputName.value"
+                          :input-surname="form.simpleInputSurname.value"
+                          :name="form.btnSubmit.name"
+                          :custom-type="form.btnSubmit.type"
+                          :custom-class-btn="form.btnSubmit.customClass"
+                      />
+                    </template>
+                  </VForm>
+                </div>
+              </div>
             </div>
-            <div v-else-if="item === 'form'">
-             <VForm>
-               <template v-slot:header>
-                 <h2>{{ formHeader }}</h2>
-               </template>
-             </VForm>
+            <div v-else-if="item === 'watch-form-provide-inject'">
+              <ThemeForm/>
             </div>
             <div v-else>
-              <TodoList/>
+              <VAnimeWrapper/>
             </div>
           </div>
         </div>
@@ -39,50 +54,58 @@
 </template>
 
 <script>
-import VSelect from "@/components/molecules/VSelect";
 import VForm from "@/components/VForm";
-import VTodoList from "@/components/VTodoList";
-import TodoList from "@/components/VTodoList";
+import VFormWatch from "@/components/VFormWatch";
+import ThemeForm from "@/components/HOC/ThemeForm.vue";
+import VInput from "@/components/molecules/VInput";
+import { withDataProcessingBtn } from "@/components/HOC/BtnDataProcessing";
+import VButton from "@/components/molecules/VButton";
+import VAnimeWrapper from "@/components/VAnimeWrapper";
+
 
 export default {
   name: 'App',
   data(){
     return{
-      currentTab: 0,
+      currentTab: 2,
       changedBgColor: '',
       tabsBtn: [
-        'Custom Select',
-        'Form',
-        'Todo List'
+        'HOP Form',
+        'Form with Watch and Provide/Inject',
+        'Observable'
       ],
       tabsContent: [
-        'custom-select',
-        'form',
-        'todo-list'
+        'hop-form',
+        'watch-form-provide-inject',
+        'Observable'
       ],
-      customSelect: {
-        byDefault: 'Выберите город',
-        options:[
-          {
-            value: 'Kiev',
-            name: 'Киев'
-          },
-          {
-            value: 'Lviv',
-            name: 'Львов'
-          },
-          {
-            value: 'Kharkiv',
-            name: 'Харьков'
-          },
-        ]
+      form:{
+        simpleInputName:{
+          typeInput: 'text',
+          value: '',
+          label: 'Имя'
+        },
+        simpleInputSurname:{
+          typeInput: 'text',
+          value: '',
+          label: 'Фамилия'
+        },
+        btnSubmit:{
+          type: 'submit',
+          name: 'Получить и записать данные',
+          customClass: 'btn-primary'
+        }
       },
-      formHeader: 'Форма регистрации'
     }
   },
   components: {
-    TodoList,
-    VSelect, VForm, VTodoList
+    VButton,
+    VForm,
+    VFormWatch,
+    ThemeForm,
+    VInput,
+    VBtnData: withDataProcessingBtn(VButton),
+    VAnimeWrapper,
   },
 }
 </script>
@@ -95,6 +118,16 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.4s;
+  max-height: 100%;
+}
+.fade-enter,
+.fade-leave-to{
+  opacity: 0;
+  max-height: 0;
 }
 .buttons-container{
   display: flex;
