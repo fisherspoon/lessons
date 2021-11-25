@@ -1,111 +1,20 @@
 <template>
   <div id="app">
-    <div class="container">
-      <div class="tabs-container">
-        <div class="buttons-container">
-          <button
-              @click="currentTab = index"
-              v-for="(item, index) in tabsBtn" :key="item + index" :class="{'active' : index === currentTab}"
-          >
-            {{item}}
-          </button>
-        </div>
-        <div class="content-container">
-          <div class="tab" :class="[ {'active' : index === currentTab}, changedBgColor ]" v-for="(item, index) in tabsContent" :key="item + index">
-            <div v-if="item === 'hop-form'">
-              <div class="row">
-                <div class="col-3">
-                  <VForm>
-                    <template v-slot:form-content>
-                      <VInput
-                          :type-input="form.simpleInputName.typeInput"
-                          :value.sync="form.simpleInputName.value"
-                          :label="form.simpleInputName.label"
-                      />
-                      <VInput
-                          :type-input="form.simpleInputSurname.typeInput"
-                          :value.sync="form.simpleInputSurname.value"
-                          :label="form.simpleInputSurname.label"
-                      />
-                      <VBtnData
-                          :input-name="form.simpleInputName.value"
-                          :input-surname="form.simpleInputSurname.value"
-                          :name="form.btnSubmit.name"
-                          :custom-type="form.btnSubmit.type"
-                          :custom-class-btn="form.btnSubmit.customClass"
-                      />
-                    </template>
-                  </VForm>
-                </div>
-              </div>
-            </div>
-            <div v-else-if="item === 'watch-form-provide-inject'">
-              <ThemeForm/>
-            </div>
-            <div v-else>
-              <VAnimeWrapper/>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
+    <Menu/>
   </div>
 </template>
 
 <script>
-import VForm from "@/components/VForm";
-import VFormWatch from "@/components/VFormWatch";
-import ThemeForm from "@/components/HOC/ThemeForm.vue";
-import VInput from "@/components/molecules/VInput";
-import { withDataProcessingBtn } from "@/components/HOC/BtnDataProcessing";
-import VButton from "@/components/molecules/VButton";
-import VAnimeWrapper from "@/components/VAnimeWrapper";
-
+import Menu from "@/components/Menu";
 
 export default {
   name: 'App',
   data(){
-    return{
-      currentTab: 2,
-      changedBgColor: '',
-      tabsBtn: [
-        'HOP Form',
-        'Form with Watch and Provide/Inject',
-        'Observable'
-      ],
-      tabsContent: [
-        'hop-form',
-        'watch-form-provide-inject',
-        'Observable'
-      ],
-      form:{
-        simpleInputName:{
-          typeInput: 'text',
-          value: '',
-          label: 'Имя'
-        },
-        simpleInputSurname:{
-          typeInput: 'text',
-          value: '',
-          label: 'Фамилия'
-        },
-        btnSubmit:{
-          type: 'submit',
-          name: 'Получить и записать данные',
-          customClass: 'btn-primary'
-        }
-      },
+    return {
     }
   },
   components: {
-    VButton,
-    VForm,
-    VFormWatch,
-    ThemeForm,
-    VInput,
-    VBtnData: withDataProcessingBtn(VButton),
-    VAnimeWrapper,
+    Menu
   },
 }
 </script>
