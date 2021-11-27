@@ -50,7 +50,7 @@ export default {
       font-size: 24px;
       text-decoration: none;
       color: rgba(0, 0, 0, .72);
-      &.router-link-active{
+      &.router-link-exact-active{
         color: blueviolet;
         font-weight: 700;
       }

@@ -13,26 +13,20 @@
 
 <script>
 import PostCard from "@/components/pages/PostCard";
+import { mapState } from 'vuex'
 
 export default {
   name: "Posts",
-  data(){
-    return{
-      dataPosts: []
-    }
-  },
   components:{
     PostCard,
   },
-  beforeMount() {
-    async function fetchPostsJSON() {
-      const response = await fetch('https://jsonplaceholder.typicode.com/posts');
-      const posts = await response.json();
-      return posts;
-    }
-    fetchPostsJSON().then(posts => {
-     this.dataPosts = posts
-    });
+  computed:{
+    ...mapState({
+      dataPosts: state => state.posts.postsData
+    })
+  },
+  beforeMount(){
+    this.$store.dispatch('posts/getAllPosts');
   }
 }
 </script>

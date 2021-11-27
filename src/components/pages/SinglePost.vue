@@ -15,32 +15,18 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: "SinglePost",
-  data(){
-    return{
-      singlePostData: {},
-      author: {}
-    }
+  computed:{
+    ...mapState({
+      singlePostData: state => state.posts.singlePostData,
+      author: state => state.posts.author
+    })
   },
   beforeMount() {
-    async function fetchPostsJSON() {
-      const response = await fetch('https://jsonplaceholder.typicode.com/posts');
-      const posts = await response.json();
-      return posts;
-    }
-    fetchPostsJSON().then(posts => {
-      this.singlePostData = posts.find(item => item.id == this.$route.params.id);
-    }).then(() => {
-      fetch(`https://jsonplaceholder.typicode.com/users/${this.singlePostData.userId}`)
-      .then(response => response.json())
-      .then((response) => {
-        console.log('resp ' + response)
-        this.author = response;
-      })
-
-     }
-    )
+    this.$store.dispatch('posts/getPostByAuthor', this.$route.params.id);
   }
 }
 </script>

@@ -32,27 +32,18 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: "Author",
-  data(){
-    return{
-      authorData: {},
-      postsByAuthor: [],
-    }
+  computed:{
+    ...mapState({
+      authorData: state => state.posts.author,
+      postsByAuthor: state => state.posts.allPostsByAuthor
+    })
   },
   beforeCreate() {
-    fetch(`https://jsonplaceholder.typicode.com/users/${this.$route.params.id}`)
-        .then(response => response.json())
-        .then((response) => {
-          this.authorData = response;
-        })
-        .then(() => {
-          fetch(`https://jsonplaceholder.typicode.com/posts?userId=${this.$route.params.id}`)
-              .then(response => response.json())
-              .then((response) => {
-                this.postsByAuthor = response;
-              })
-        })
+    this.$store.dispatch('posts/getAllPostsByAuthor', this.$route.params.id);
   }
 }
 </script>
