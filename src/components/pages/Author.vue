@@ -5,7 +5,7 @@
         <div class="card" style="width: 18rem;">
           <div class="card-body">
             <h5 class="card-title">{{ authorData.name }} {{ authorData.username }}</h5>
-            <div class="description">
+            <div class="description" v-if="authorData.address">
               <p>{{ authorData.email }}</p>
               <p>{{ authorData.address.city }}</p>
               <p>{{ authorData.address.street }}</p>
@@ -36,20 +36,11 @@ export default {
   name: "Author",
   data(){
     return{
-      authorData: {
-        name: '',
-        username: '',
-        email: '',
-        address: {
-          city: '',
-          street: '',
-          suite: ''
-        }
-      },
+      authorData: {},
       postsByAuthor: [],
     }
   },
-  beforeMount() {
+  beforeCreate() {
     fetch(`https://jsonplaceholder.typicode.com/users/${this.$route.params.id}`)
         .then(response => response.json())
         .then((response) => {
@@ -62,7 +53,6 @@ export default {
                 this.postsByAuthor = response;
               })
         })
-
   }
 }
 </script>
