@@ -49,10 +49,12 @@
 
         <div class="row">
           <div class="col">
-            <template v-for="item in userTodos">
+            <template v-for="(item, index) in userTodos">
               <TodoSingle
                   :key="item.header"
                   :single-todo-data="item"
+                  :task-data="taskData"
+                  :index="index"
               />
             </template>
           </div>
@@ -68,6 +70,7 @@ import VTextArea from "@/components/molecules/VTextArea";
 import VButton from "@/components/molecules/VButton";
 import { required } from "vuelidate/lib/validators";
 import { mapState } from 'vuex';
+import format from 'date-fns/format';
 
 const fileExtension = (imgData, vm) =>  {
   const allowedExtensions = /(\.png|\.jpeg|\.jpg)$/i;
@@ -141,13 +144,27 @@ export default {
           header: this.taskData.header.value,
           description: this.taskData.description.value,
           url: this.taskData.urlImage.value,
+          timeCreated: (format(new Date(), 'yyyy-MM-dd HH:mm:ss'))
         };
         this.taskData.header.value = '';
         this.taskData.description.value = '';
         this.taskData.urlImage.value = '';
+
+        let users = JSON.parse(localStorage.getItem('users'));
+        for(let i = 0; i < users.length; i++){
+          let parseItem = JSON.parse(users[i]);
+          if(parseItem.login === this.$store.state.todoByUser.currentUser.login){
+            parseItem.todos.push(task);
+            users.splice(i, 1, JSON.stringify(parseItem));
+            localStorage.setItem('users', JSON.stringify(users));
+          }
+        }
         this.$store.commit('todoByUser/SET_TODO_FOR_USER', task)
       }
     }
+  },
+  beforeCreate() {
+    this.$store.dispatch('todoByUser/GET_TODOS_BY_USER_ID_FROM_STORAGE', this.$route.params.id)
   }
 }
 </script>

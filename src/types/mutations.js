@@ -1,2 +1,4 @@
 export const SET_TODO_FOR_USER = 'SET_TODO_FOR_USER'
 export const SET_CURRENT_USER = 'SET_CURRENT_USER'
+export const REMOVE_TODO = 'REMOVE_TODO'
+export const EDIT_TODO = 'EDIT_TODO'

@@ -140,11 +140,11 @@ export default {
           id: result,
           login: this.formRegistration.login.value,
           password: this.formRegistration.password.value,
+          isAuthorized: true,
           todos: []
-          // isAuthorization: true
         }
         this.appendToStorage('users', JSON.stringify(userData));
-        this.$store.commit('todoByUser/SET_CURRENT_USER', { login: userData.login})
+        this.$store.commit('todoByUser/SET_CURRENT_USER', { login: userData.login, isAuthorized: true})
         this.$router.push({ name: 'todos', params: { id: userData.id } });
       }
     },

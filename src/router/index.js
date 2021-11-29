@@ -35,8 +35,9 @@ export default new VueRouter({
         {
             path: '/todos/:id',
             name: 'todos',
-            // beforeEnter: (to, from, next) => {
-            //     if (!store.state.todoByUser.currentUser.isAuthorization) next({ name: 'Registration' })
+            // beforeEach: (to, from, next) => {
+            //     console.log(store.state.todoByUser.currentUser.isAuthorized)
+            //     if (!store.state.todoByUser.currentUser.isAuthorized) next({ name: 'Registration' })
             //     else next()
             // },
             components: {

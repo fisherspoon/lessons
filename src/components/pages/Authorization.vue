@@ -91,7 +91,7 @@ export default {
         for(let i = 0; i < users.length; i++){
           let parseItem = JSON.parse(users[i]);
           if(parseItem.login === this.formAuthorization.login.value && parseItem.password === this.formAuthorization.password.value){
-            this.$store.commit('todoByUser/SET_CURRENT_USER', { login: parseItem.login})
+            this.$store.commit('todoByUser/SET_CURRENT_USER', { login: parseItem.login, isAuthorized: true})
             this.$router.push({ name: 'todos', params: { id: parseItem.id } });
           }
           else if(parseItem.login !== this.formAuthorization.login.value){
