@@ -37,6 +37,9 @@ export default {
   text-align: left;
   .form-label{
     width: 100%;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    color: rgba(0, 0, 0, 0.72);
   }
 }
 </style>

@@ -1,0 +1,2 @@
+export const SET_TODO_FOR_USER = 'SET_TODO_FOR_USER'
+export const SET_CURRENT_USER = 'SET_CURRENT_USER'

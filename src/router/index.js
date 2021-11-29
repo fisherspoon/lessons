@@ -1,35 +1,47 @@
 import VueRouter from "vue-router";
-import Counter from "@/components/pages/Counter";
-import Posts from "@/components/pages/Posts";
-import SinglePost from "@/components/pages/SinglePost";
-import Author from "@/components/pages/Author";
+// import MainPage from "@/components/pages/MainPage";
+import Registration from "@/components/pages/Registration";
+import Authorization from "@/components/pages/Authorization";
+import Todos from "@/components/pages/Todos";
+import store from '@/store/index'
 
 export default new VueRouter({
     mode: 'history',
     routes: [
+        // {
+        //     path: '/',
+        //     components: {
+        //         default: MainPage,
+        //     },
+        // },
         {
             path: '/',
-            name: 'Counter',
+            redirect: '/registration'
+        },
+        {
+            path: '/registration',
+            name: 'Registration',
             components: {
-                default: Counter,
+                default: Registration,
             },
         },
         {
-            path: '/posts',
-            name: 'Posts',
+            path: '/authorization',
+            name: 'authorization',
             components: {
-                default: Posts,
+                default: Authorization,
             },
         },
         {
-            path: '/posts/post/:id',
-            name: 'SinglePost',
-            component: SinglePost
-        },
-        {
-            path: '/posts/author/:id',
-            name: 'Author',
-            component: Author
+            path: '/todos/:id',
+            name: 'todos',
+            // beforeEnter: (to, from, next) => {
+            //     if (!store.state.todoByUser.currentUser.isAuthorization) next({ name: 'Registration' })
+            //     else next()
+            // },
+            components: {
+                default: Todos,
+            },
         },
     ]
 })

@@ -1,12 +1,10 @@
 <template>
   <div class="wrapper-input mb-2">
     <label
-        :style="{ color: theme.labelColor }"
         :for="'custom-input' + label"
         class="form-label">
       {{ label }}
     <input
-        :style="{ borderColor: theme.inputBorder }"
         :id="'custom-input' + label"
         class="form-control"
         :type="typeInput"
@@ -20,17 +18,6 @@
 <script>
   export default {
     name: 'VInput',
-    inject: {
-      getTheme: { default: '' }
-    },
-    computed:{
-      theme(){
-        if(this.getTheme){
-          return this.getTheme();
-        }
-        return ''
-      }
-    },
     props:{
       label:{
         type: String,
@@ -57,6 +44,11 @@
     font-size: .8rem;
     letter-spacing: .5px;
     color: rgba(0, 0, 0, .72);
+  }
+}
+.form-group--error{
+  input{
+    border-color: crimson;
   }
 }
 </style>

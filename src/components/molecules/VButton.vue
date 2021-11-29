@@ -1,7 +1,6 @@
 <template>
   <div class="wrapper-btn">
     <button
-        :style="{ backgroundColor: theme.buttonBg }"
         :type="customType"
         class="btn"
         :class="customClassBtn"
@@ -14,17 +13,6 @@
 <script>
  export default {
    name: 'VButton',
-   inject: {
-     getTheme: { default: '' }
-   },
-   computed:{
-     theme(){
-       if(this.getTheme){
-         return this.getTheme();
-       }
-       return ''
-     }
-   },
    props:{
      customType:{
        type: String,
