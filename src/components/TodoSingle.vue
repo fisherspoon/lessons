@@ -5,19 +5,20 @@
       <div class="main-content">
 
         <template v-if="isEdited">
+
           <VInput
               :label="taskData.header.name"
-              :value.sync="taskData.header"
+              :value="task[index].header"
               :type-input="taskData.header.type"
           />
           <VInput
               :label="taskData.urlImage.name"
-              :value.sync="taskData.url"
+              :value.sync="task[index].url"
               :type-input="taskData.urlImage.type"
           />
           <VTextArea
               :label="taskData.description.name"
-              :value.sync="taskData.description"
+              :value.sync="task[index].description"
           />
 
         </template>
@@ -25,7 +26,8 @@
         <template v-else>
           <p>{{ singleTodoData.header }}</p>
           <p>{{ singleTodoData.description }}</p>
-          <p class="time-created">{{ singleTodoData.timeCreated }}</p>
+          <p class="time-created">Добавлено: {{ singleTodoData.timeCreated }}</p>
+          <p v-if="task[index].edited" class="edited-mark">Изменено</p>
           <VButton
               :name="btnShowControls.name"
               :custom-type="btnShowControls.type"
@@ -41,13 +43,19 @@
                 :name="controls.btnEdit.name"
                 :custom-type="controls.btnEdit.type"
                 :custom-class-btn="controls.btnEdit.class"
-                @click.native="editTask(index)"
+                @click.native="editTask"
             />
             <VButton
                 :name="controls.btnRemove.name"
                 :custom-type="controls.btnRemove.type"
                 :custom-class-btn="controls.btnRemove.class"
-                @click.native="removeTask"
+                @click.native="removeTask(index)"
+            />
+            <VButton
+                :name="controls.btnDone.name"
+                :custom-type="controls.btnDone.type"
+                :custom-class-btn="controls.btnDone.class"
+                @click.native="doneTask(index)"
             />
             <VButton
                 v-if="isEdited"
@@ -67,6 +75,7 @@
 import VButton from "@/components/molecules/VButton";
 import VInput from "@/components/molecules/VInput";
 import VTextArea from "@/components/molecules/VTextArea";
+import { mapState } from "vuex";
 
 export default {
   name: "TodoSingle",
@@ -104,17 +113,17 @@ export default {
           type: 'button',
           class: 'btn-danger'
         },
+        btnDone:{
+          name: 'Выполнено',
+          type: 'button',
+          class: 'btn-secondary'
+        },
         btnSave:{
           name: 'Сохранить',
           type: 'button',
           class: 'btn-success'
         }
       },
-      task: {
-        header: '',
-        description: '',
-        url: '',
-      }
     }
   },
   components:{
@@ -122,41 +131,29 @@ export default {
     VInput,
     VTextArea
   },
+  computed:{
+    ...mapState({
+      task: state => state.todoByUser.todos
+    })
+  },
   methods:{
-    removeTask(index){
-      this.$store.commit('todoByUser/REMOVE_TODO', index)
-
-      let users = JSON.parse(localStorage.getItem('users'));
-      for(let i = 0; i < users.length; i++){
-        let parseItem = JSON.parse(users[i]);
-        if(parseItem.login === this.$store.state.todoByUser.currentUser.login){
-          parseItem.todos = this.$store.state.todoByUser.todos;
-          users.splice(i, 1, JSON.stringify(parseItem));
-          localStorage.setItem('users', JSON.stringify(users));
-        }
-      }
+    removeTask(indexTask){
+      let userId = this.$route.params.id
+      this.$store.commit('todoByUser/REMOVE_TODO', { indexTask, userId })
     },
     editTask(){
       this.isEdited = !this.isEdited
     },
-    saveChanges(index){
-
-      this.$store.commit('todoByUser/EDIT_TODO', [index, this.task])
-
-      // let index = this.tasks.findIndex(item => item === task);
-      // let tasksFromStorage = this.getTaskByUser();
-      // tasksFromStorage[index] = task;
-      // localStorage.setItem(this.currentUser, JSON.stringify(tasksFromStorage));
-      //
-      // let users = JSON.parse(localStorage.getItem('users'));
-      // for(let i = 0; i < users.length; i++){
-      //   let parseItem = JSON.parse(users[i]);
-      //   if(parseItem.login === this.$store.state.todoByUser.currentUser.login){
-      //     parseItem.todos = this.$store.state.todoByUser.todos;
-      //     users.splice(i, 1, JSON.stringify(parseItem));
-      //     localStorage.setItem('users', JSON.stringify(users));
-      //   }
-      // }
+    saveChanges(indexTask){
+      let changedTask = this.task[indexTask];
+      changedTask.edited = true;
+      this.$store.commit('todoByUser/EDIT_TODO', { indexTask, changedTask })
+      this.isEdited = false;
+      this.isShowControls = false;
+    },
+    doneTask(index){
+      let changedTask = this.task[index];
+      changedTask.done = true;
     }
   }
 }
@@ -184,6 +181,11 @@ export default {
           position: absolute;
           right: 16px;
           top: 16px;
+        }
+        .edited-mark{
+          position: absolute;
+          right: 16px;
+          bottom: 0;
         }
         .controls-container{
           display: flex;

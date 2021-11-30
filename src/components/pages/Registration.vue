@@ -136,6 +136,7 @@ export default {
         }
 
         this.$refs.sameLogin.classList.remove('show')
+
         let userData = {
           id: result,
           login: this.formRegistration.login.value,
@@ -143,33 +144,29 @@ export default {
           isAuthorized: true,
           todos: []
         }
-        this.appendToStorage('users', JSON.stringify(userData));
-        this.$store.commit('todoByUser/SET_CURRENT_USER', { login: userData.login, isAuthorized: true})
+
+        this.$store.commit('SET_TO_ALL_USERS', userData)
+        // this.$store.commit('todoByUser/SET_CURRENT_USER', { login: userData.login, isAuthorized: true})
         this.$router.push({ name: 'todos', params: { id: userData.id } });
       }
     },
-    appendToStorage(name, data){
-      let old = JSON.parse(localStorage.getItem(name));
-      if(old === null) old = [];
-      old.push(data);
-      localStorage.setItem(name, JSON.stringify(old));
-    },
     checkSameLoginAndReturnIdUser(){
-      let users = JSON.parse(localStorage.getItem('users')),
+      let users = this.$store.state.users,
           usersLength = 0;
-      if(!users){
-        return usersLength
-      }
 
+      if(!users) return usersLength
       for(let i = 0; i < users.length; i++){
-        let parseItem = JSON.parse(users[i]);
-        if(parseItem.login === this.formRegistration.login.value){
+        if(users[i].login === this.formRegistration.login.value){
           return false;
         }
-        usersLength = parseItem.id;
+        usersLength++;
       }
-      return ++usersLength
+      console.log(usersLength)
+      return usersLength
     }
+  },
+  beforeCreate() {
+    this.$store.commit('RETURN_USERS_FROM_STORAGE', JSON.parse(localStorage.getItem('users')))
   }
 }
 </script>

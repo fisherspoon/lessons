@@ -87,19 +87,22 @@ export default {
       this.$v.$touch();
 
       if(!this.$v.$invalid) {
-        let users = JSON.parse(localStorage.getItem('users'));
-        for(let i = 0; i < users.length; i++){
-          let parseItem = JSON.parse(users[i]);
-          if(parseItem.login === this.formAuthorization.login.value && parseItem.password === this.formAuthorization.password.value){
-            this.$store.commit('todoByUser/SET_CURRENT_USER', { login: parseItem.login, isAuthorized: true})
-            this.$router.push({ name: 'todos', params: { id: parseItem.id } });
+
+        let usersInStorage = this.$store.state.users;
+        for(let i = 0; i < usersInStorage.length; i++){
+          if(usersInStorage[i].login === this.formAuthorization.login.value && usersInStorage[i].password === this.formAuthorization.password.value){
+            this.$store.commit('todoByUser/SET_CURRENT_USER', { login: usersInStorage[i].login, isAuthorized: true})
+            this.$router.push({ name: 'todos', params: { id: usersInStorage[i].id } });
           }
-          else if(parseItem.login !== this.formAuthorization.login.value){
+          else{
             this.$refs.notFoundUser.classList.add('show')
           }
         }
       }
     }
+  },
+  beforeCreate() {
+    this.$store.commit('RETURN_USERS_FROM_STORAGE', JSON.parse(localStorage.getItem('users')))
   }
 }
 </script>
