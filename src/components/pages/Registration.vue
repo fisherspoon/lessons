@@ -142,16 +142,19 @@ export default {
           login: this.formRegistration.login.value,
           password: this.formRegistration.password.value,
           isAuthorized: true,
-          todos: []
+          todos: [],
+          tasksDirection: 'row'
         }
 
-        this.$store.commit('SET_TO_ALL_USERS', userData)
-        // this.$store.commit('todoByUser/SET_CURRENT_USER', { login: userData.login, isAuthorized: true})
+        let users = JSON.parse(localStorage.getItem('users'));
+        !users ? users = [userData] : users.push(userData)
+
+        this.$store.commit('SET_USERS_TO_LOCALSTORAGE', users)
         this.$router.push({ name: 'todos', params: { id: userData.id } });
       }
     },
     checkSameLoginAndReturnIdUser(){
-      let users = this.$store.state.users,
+      let users = JSON.parse(localStorage.getItem('users')),
           usersLength = 0;
 
       if(!users) return usersLength
@@ -161,13 +164,9 @@ export default {
         }
         usersLength++;
       }
-      console.log(usersLength)
       return usersLength
     }
   },
-  beforeCreate() {
-    this.$store.commit('RETURN_USERS_FROM_STORAGE', JSON.parse(localStorage.getItem('users')))
-  }
 }
 </script>
 

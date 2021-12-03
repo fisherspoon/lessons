@@ -1,11 +1,11 @@
 <template>
   <div class="wrapper-checkbox">
     <label
-        for="custom-checkbox"
+        :for="'custom-checkbox' + id"
         class="form-check-label">
       {{ label }}
     <input
-        id="custom-checkbox"
+        :id="'custom-checkbox' + id"
         class="form-check-input"
         type="checkbox"
         :checked="value"
@@ -24,7 +24,12 @@ export default {
       type: String,
       default: 'Checkbox name'
     },
-    value: Boolean,
+    value:{
+      type: Boolean
+    },
+    id:{
+      type: Number
+    }
   },
 }
 </script>

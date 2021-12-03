@@ -87,12 +87,12 @@ export default {
       this.$v.$touch();
 
       if(!this.$v.$invalid) {
+        let users = localStorage.getItem('users');
+        users = JSON.parse(users)
 
-        let usersInStorage = this.$store.state.users;
-        for(let i = 0; i < usersInStorage.length; i++){
-          if(usersInStorage[i].login === this.formAuthorization.login.value && usersInStorage[i].password === this.formAuthorization.password.value){
-            this.$store.commit('todoByUser/SET_CURRENT_USER', { login: usersInStorage[i].login, isAuthorized: true})
-            this.$router.push({ name: 'todos', params: { id: usersInStorage[i].id } });
+        for(let i = 0; i < users.length; i++){
+          if(users[i].login === this.formAuthorization.login.value && users[i].password === this.formAuthorization.password.value){
+            this.$router.push({ name: 'todos', params: { id: users[i].id } });
           }
           else{
             this.$refs.notFoundUser.classList.add('show')
@@ -101,9 +101,6 @@ export default {
       }
     }
   },
-  beforeCreate() {
-    this.$store.commit('RETURN_USERS_FROM_STORAGE', JSON.parse(localStorage.getItem('users')))
-  }
 }
 </script>
 

@@ -1,10 +1,19 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <transition name="slide">
+      <UserActivity v-show="isShowSidebar"/>
+    </transition>
+    <div class="container-fluid">
+      <Menu/>
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
 <script>
+import Menu from "@/components/Menu";
+import UserActivity from "@/components/UserActivity";
+import { mapState } from "vuex"
 
 export default {
   name: 'App',
@@ -12,8 +21,14 @@ export default {
     return {
     }
   },
+  computed:{
+    ...mapState({
+      isShowSidebar: state => state.isShowSidebar
+    })
+  },
   components: {
-
+    Menu,
+    UserActivity
   },
 }
 </script>
@@ -25,7 +40,14 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  max-width: 1460px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: auto;
+}
+.container-fluid{
+  position: relative;
 }
 .fade-enter-active,
 .fade-leave-active {
@@ -79,5 +101,17 @@ ul li{
 }
 .tab.active{
   display: block;
+}
+
+.slide-enter-active {
+  transition: all .7s ease;
+}
+
+.slide-leave-active {
+  transition: all .7s ease;
+}
+
+.slide-enter, .slide-leave-active {
+  transform: translateX(-100%);
 }
 </style>

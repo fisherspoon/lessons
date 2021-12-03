@@ -1,35 +1,29 @@
 import VueRouter from "vue-router";
-// import MainPage from "@/components/pages/MainPage";
 import Registration from "@/components/pages/Registration";
 import Authorization from "@/components/pages/Authorization";
 import Todos from "@/components/pages/Todos";
+import TodosCompleted from "@/components/pages/TodosCompleted";
 import store from '@/store/index'
 
 export default new VueRouter({
     mode: 'history',
     routes: [
-        // {
-        //     path: '/',
-        //     components: {
-        //         default: MainPage,
-        //     },
-        // },
         {
             path: '/',
             redirect: '/registration'
         },
         {
             path: '/registration',
-            name: 'Registration',
+            name: 'registration',
             components: {
-                default: Registration,
+                default: Registration
             },
         },
         {
             path: '/authorization',
             name: 'authorization',
             components: {
-                default: Authorization,
+                default: Authorization
             },
         },
         {
@@ -41,8 +35,15 @@ export default new VueRouter({
             //     else next()
             // },
             components: {
-                default: Todos,
+                default: Todos
             },
         },
+        {
+            path: "/todos/:id/todos-completed",
+            name: 'todos-completed',
+            components: {
+                default: TodosCompleted
+            }
+        }
     ]
 })

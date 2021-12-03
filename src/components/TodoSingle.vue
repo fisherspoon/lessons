@@ -1,25 +1,38 @@
 <template>
-  <div class="single-todo-wrapper">
+  <transition
+      enter-active-class="animate__animated"
+      leave-active-class="animate__animated animate__backOutRight"
+      v-show="!task[index].done">
+    <div class="single-todo-wrapper" v-show="!task[index].done">
     <div class="tasks-view mb-4">
       <img :src="singleTodoData.url || 'https://www.kenyons.com/wp-content/uploads/2017/04/default-image-620x600.jpg'" alt="">
       <div class="main-content">
-
         <template v-if="isEdited">
 
-          <VInput
-              :label="taskData.header.name"
-              :value="task[index].header"
-              :type-input="taskData.header.type"
-          />
-          <VInput
-              :label="taskData.urlImage.name"
-              :value.sync="task[index].url"
-              :type-input="taskData.urlImage.type"
-          />
-          <VTextArea
-              :label="taskData.description.name"
-              :value.sync="task[index].description"
-          />
+          <div class="input-container mb-4" :class="{ 'form-group--error': $v.task.$each[index].header.$error }">
+            <VInput
+                :label="taskData.header.name"
+                :value.sync="task[index].header"
+                :type-input="taskData.header.type"
+            />
+            <p class="error-text">Поле обязательно к заполнению</p>
+          </div>
+
+          <div class="input-container mb-4" :class="{ 'form-group--error': $v.task.$each[index].url.$error }">
+            <VInput
+                :label="taskData.urlImage.name"
+                :value.sync="task[index].url"
+                :type-input="taskData.urlImage.type"
+            />
+            <p class="error-text">Допустимые форматы изображений - .png, .jpg</p>
+          </div>
+
+          <div class="input-container mb-4">
+            <VTextArea
+                :label="taskData.description.name"
+                :value.sync="task[index].description"
+            />
+          </div>
 
         </template>
 
@@ -38,44 +51,65 @@
 
         <transition name="fade">
           <div v-if="isShowControls" class="controls-container">
-            <VButton
-                v-if="!isEdited"
-                :name="controls.btnEdit.name"
-                :custom-type="controls.btnEdit.type"
-                :custom-class-btn="controls.btnEdit.class"
-                @click.native="editTask"
+            <VSelect
+              :defaultProp.sync="controls.priority.byDefault"
+              :by-default="controls.priority.byDefault"
+              :options="controls.priority.options"
             />
-            <VButton
-                :name="controls.btnRemove.name"
-                :custom-type="controls.btnRemove.type"
-                :custom-class-btn="controls.btnRemove.class"
-                @click.native="removeTask(index)"
-            />
-            <VButton
-                :name="controls.btnDone.name"
-                :custom-type="controls.btnDone.type"
-                :custom-class-btn="controls.btnDone.class"
-                @click.native="doneTask(index)"
-            />
-            <VButton
-                v-if="isEdited"
-                :name="controls.btnSave.name"
-                :custom-type="controls.btnSave.type"
-                :custom-class-btn="controls.btnSave.class"
-                @click.native="saveChanges(index)"
-            />
+            <div class="is-done">
+              <VCheckbox
+                  :checked.sync="task[index].done"
+                  :label="controls.markDone.label"
+                  :id="index"
+                  @click.native="setChangedTask(index, true)"
+              />
+            </div>
+            <div class="btns-container">
+              <VButton
+                  v-if="!isEdited"
+                  :name="controls.btnEdit.name"
+                  :custom-type="controls.btnEdit.type"
+                  :custom-class-btn="controls.btnEdit.class"
+                  @click.native="editTask"
+              />
+              <VButton
+                  :name="controls.btnRemove.name"
+                  :custom-type="controls.btnRemove.type"
+                  :custom-class-btn="controls.btnRemove.class"
+                  @click.native="removeTask(index)"
+              />
+              <VButton
+                  v-if="isEdited"
+                  :name="controls.btnSave.name"
+                  :custom-type="controls.btnSave.type"
+                  :custom-class-btn="controls.btnSave.class"
+                  @click.native="setChangedTask(index)"
+              />
+            </div>
           </div>
         </transition>
       </div>
     </div>
   </div>
+  </transition>
 </template>
 
 <script>
 import VButton from "@/components/molecules/VButton";
 import VInput from "@/components/molecules/VInput";
 import VTextArea from "@/components/molecules/VTextArea";
+import VCheckbox from "@/components/molecules/VCheckbox";
+import VSelect from "@/components/molecules/VSelect";
 import { mapState } from "vuex";
+import { required } from "vuelidate/lib/validators";
+
+const fileExtension = (imgData) =>  {
+  const allowedExtensions = /(\.png|\.jpeg|\.jpg)$/i;
+  if(!allowedExtensions.exec(imgData) && imgData !== ''){
+    return false
+  }
+  return true
+}
 
 export default {
   name: "TodoSingle",
@@ -113,53 +147,106 @@ export default {
           type: 'button',
           class: 'btn-danger'
         },
-        btnDone:{
-          name: 'Выполнено',
-          type: 'button',
-          class: 'btn-secondary'
+        markDone:{
+          label: 'Выполнено',
+          value: false,
         },
         btnSave:{
           name: 'Сохранить',
           type: 'button',
           class: 'btn-success'
+        },
+        priority:{
+          byDefault: 'Приоритетность',
+          options:[
+            {
+              value: 'good',
+              name: 'Не горит'
+            },
+            {
+              value: 'normal',
+              name: 'Норм'
+            },
+            {
+              value: 'danger',
+              name: 'Нужно было сделать еще вчера'
+            },
+          ]
         }
       },
+    }
+  },
+  validations:{
+      task: {
+        $each: {
+          header: {required},
+          url: { fileExtension }
+        }
     }
   },
   components:{
     VButton,
     VInput,
-    VTextArea
+    VTextArea,
+    VCheckbox,
+    VSelect
   },
   computed:{
     ...mapState({
-      task: state => state.todoByUser.todos
+      task: state => state.activeUser.todos
     })
   },
   methods:{
     removeTask(indexTask){
-      let userId = this.$route.params.id
-      this.$store.commit('todoByUser/REMOVE_TODO', { indexTask, userId })
+      let idActiveUser = this.$route.params.id,
+          users = JSON.parse(localStorage.getItem('users')),
+          activeUser = users[idActiveUser],
+          taskHeader = activeUser.todos[indexTask].header;
+
+      activeUser.todos.splice(indexTask, 1);
+      users.splice(idActiveUser, 1, activeUser);
+
+      this.$store.commit('SET_ACTIVE_USER_TO_STATE', activeUser)
+      this.$store.commit('SET_USERS_TO_LOCALSTORAGE', users)
+
+      console.log('123123')
+      this.$store.commit('SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE', `<b>${this.$store.state.activeUser.login}</b> удалил задачу <b>${taskHeader}</b>`)
     },
     editTask(){
       this.isEdited = !this.isEdited
     },
-    saveChanges(indexTask){
-      let changedTask = this.task[indexTask];
-      changedTask.edited = true;
-      this.$store.commit('todoByUser/EDIT_TODO', { indexTask, changedTask })
-      this.isEdited = false;
-      this.isShowControls = false;
+    setChangedTask(indexTask, markDone){
+      this.$v.$touch();
+      if (!this.$v.$invalid) {
+        let changedTask = this.task[indexTask];
+
+        if(!markDone){
+          this.isEdited = false;
+          this.isShowControls = false;
+          changedTask.edited = true;
+          this.$store.commit('SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE', `<b>${this.$store.state.activeUser.login}</b> внес изменения в задачу <b>${changedTask.header}</b>`)
+        }
+        else {
+          changedTask.done = true;
+          this.$store.commit('SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE', `<b>${this.$store.state.activeUser.login}</b> отметил задачу <b>${changedTask.header}</b> как выполненную`)
+        }
+
+        let idActiveUser = this.$route.params.id,
+            users = JSON.parse(localStorage.getItem('users')),
+            activeUser = users[idActiveUser]
+        activeUser.todos.splice(indexTask, 1, changedTask);
+        users.splice(idActiveUser, 1, activeUser);
+
+        this.$store.commit('SET_ACTIVE_USER_TO_STATE', activeUser)
+        this.$store.commit('SET_USERS_TO_LOCALSTORAGE', users)
+      }
     },
-    doneTask(index){
-      let changedTask = this.task[index];
-      changedTask.done = true;
-    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+
   .single-todo-wrapper{
     .tasks-view{
       border: 1px solid #949494;
@@ -189,12 +276,35 @@ export default {
         }
         .controls-container{
           display: flex;
+          flex-direction: column;
           grid-gap: 16px;
-          margin-top: 24px;
+          margin: 24px 0;
+          .btns-container{
+            display: flex;
+            grid-gap: 16px;
+          }
         }
       }
     }
   }
+
+  .rows{
+    .single-todo-wrapper{
+      .tasks-view{
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        img{
+          max-width: 100%;
+          height: 200px;
+        }
+        .main-content{
+          padding: 16px;
+        }
+      }
+    }
+  }
+
   .slide-enter-active {
     -moz-transition-duration: 0.3s;
     -webkit-transition-duration: 0.3s;
@@ -225,5 +335,68 @@ export default {
   .slide-enter, .slide-leave-to {
     overflow: hidden;
     max-height: 0;
+  }
+
+  @-webkit-keyframes backOutRight {
+    0% {
+      opacity: 1;
+      -webkit-transform: scale(1);
+      transform: scale(1)
+    }
+
+    20% {
+      opacity: .7;
+      -webkit-transform: translateX(0) scale(.7);
+      transform: translateX(0) scale(.7)
+    }
+
+    to {
+      opacity: .7;
+      -webkit-transform: translateX(2000px) scale(.7);
+      transform: translateX(2000px) scale(.7)
+    }
+  }
+
+  @keyframes backOutRight {
+    0% {
+      opacity: 1;
+      -webkit-transform: scale(1);
+      transform: scale(1)
+    }
+
+    20% {
+      opacity: .7;
+      -webkit-transform: translateX(0) scale(.7);
+      transform: translateX(0) scale(.7)
+    }
+
+    to {
+      opacity: .7;
+      -webkit-transform: translateX(2000px) scale(.7);
+      transform: translateX(2000px) scale(.7)
+    }
+  }
+
+  .animate__backOutRight {
+    -webkit-animation-name: backOutRight;
+    animation-name: backOutRight
+  }
+
+  .animate__animated {
+    animation-duration: 1s;
+    animation-fill-mode: both
+  }
+
+
+  .error-text{
+    display: none;
+    font-size: .7rem;
+    color: crimson;
+    text-align: left;
+  }
+  .form-group--error{
+    .error-text{
+      display: block;
+    }
   }
 </style>
