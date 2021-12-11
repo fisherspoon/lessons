@@ -1,7 +1,7 @@
 <template>
   <div class="modal-overlay">
     <div class="modal">
-      <div class="layer">
+      <div class="layer"  >
         <div class="content">
           <slot name="form"></slot>
         </div>
@@ -17,6 +17,9 @@ export default {
     isShowModal:{
       type: Boolean,
       required: true
+    },
+    modeBg:{
+      type: String
     }
   }
 }

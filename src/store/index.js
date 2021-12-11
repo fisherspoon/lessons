@@ -7,11 +7,13 @@ import {
     SET_USERS_TO_LOCALSTORAGE,
     SET_ACTIVE_USER_TO_STATE,
     SET_VALUE_BY_SEARCH,
+    SET_TYPE_PRIORITY,
     SET_USERS_ACTIVITY_TO_STATE,
-    SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE
+    SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE,
+    CHANGE_MODE
 } from '@/types/mutations'
 import { GET_USERS_FROM_LOCALSTORAGE, GET_USERS_ACTIVITY_FROM_LOCALSTORAGE } from '@/types/actions'
-import { GET_TASKS_BY_FILTERS, GET_COMPLETED_TASKS } from '@/types/getters'
+import { GET_TASKS_FILTERED, GET_COMPLETED_TASKS } from '@/types/getters'
 
 export default new Vuex.Store({
     state: {
@@ -19,7 +21,13 @@ export default new Vuex.Store({
         activeUser: {},
         usersActivity: [],
         searchVal: '',
-        isShowSidebar: false
+        priority: false,
+        isShowSidebar: false,
+        activeMode: 'light',
+        modes: [
+            'light',
+            'dark'
+        ],
     },
     mutations: {
         ['SET_USERS_TO_LOCALSTORAGE'](state, payload){
@@ -37,11 +45,25 @@ export default new Vuex.Store({
         ['SET_VALUE_BY_SEARCH'](state, payload){
             state.searchVal = payload
         },
+        ['SET_TYPE_PRIORITY'](state, payload){
+            state.priority === payload ? state.priority = false : state.priority = payload
+        },
         ['SHOW_SIDE_BAR'](state, payload){
             state.isShowSidebar = payload
         },
         ['SET_USERS_ACTIVITY_TO_STATE'](state, payload){
             state.usersActivity = payload
+        },
+        ['CHANGE_MODE'](state, payload){
+            console.log(payload)
+            state.activeMode = payload
+            // if(payload === 'dark'){
+            //     state.modes.light.active = false
+            //     state.modes.dark.active = true
+            // }else {
+            //     state.modes.dark.active = false
+            //     state.modes.light.active = true
+            // }
         }
     },
     actions: {
@@ -58,10 +80,11 @@ export default new Vuex.Store({
         }
     },
     getters: {
-        ['GET_TASKS_BY_FILTERS'](state){
+        ['GET_TASKS_FILTERED'](state){
             return state.activeUser.todos.filter(item => {
-                return item.header.toLowerCase().includes(state.searchVal.toLowerCase()) ||
-                    item.description.toLowerCase().includes(state.searchVal.toLowerCase())
+                return (item.header.toLowerCase().includes(state.searchVal.toLowerCase()) ||
+                    item.description.toLowerCase().includes(state.searchVal.toLowerCase())) &&
+                    (item.priority.value === state.priority || state.priority === false)
             });
         },
         ['GET_COMPLETED_TASKS'](state){

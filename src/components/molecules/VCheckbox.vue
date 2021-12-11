@@ -8,6 +8,7 @@
         :id="'custom-checkbox' + id"
         class="form-check-input"
         type="checkbox"
+        :data-value="dataAttr"
         :checked="value"
         @input="$emit('update:checked', $event.target.checked)"
     >
@@ -27,8 +28,11 @@ export default {
     value:{
       type: Boolean
     },
+    dataAttr:{
+      type: String
+    },
     id:{
-      type: Number
+      type: String
     }
   },
 }

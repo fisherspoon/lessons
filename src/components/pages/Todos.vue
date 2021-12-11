@@ -70,6 +70,26 @@
       </div>
     </div>
 
+    <div v-if="userTodos.length" class="row mb-3 mt-5">
+      <div class="col d-flex">
+        <div class="d-flex flex-column align-items-start">
+          <p>Отфильтровать по приоритетности</p>
+          <div class="d-flex" style="grid-gap: 24px">
+            <template v-for="item in btnsPriorities">
+              <div class="d-flex">
+                <VButton
+                  :key="item.name"
+                  :custom-class-btn="item.class"
+                  :name="item.name"
+                  @click.native="changePriority(item)"
+                />
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="row">
           <div class="col">
             <transition-group name="list" tag="div" :class="{'rows': activeUser.tasksDirection === 'row', 'cols': activeUser.tasksDirection === 'col'}">
@@ -91,6 +111,7 @@
 import TodoSingle from "@/components/TodoSingle";
 import VInput from "@/components/molecules/VInput";
 import VTextArea from "@/components/molecules/VTextArea";
+import VCheckbox from "@/components/molecules/VCheckbox";
 import VButton from "@/components/molecules/VButton";
 import { required } from "vuelidate/lib/validators";
 import { mapState, mapGetters } from 'vuex';
@@ -124,6 +145,26 @@ export default {
         value: '',
         type: 'search'
       },
+      btnsPriorities: [
+        {
+          name: 'Низкий',
+          val: false,
+          type: 'low',
+          class: 'btn-success'
+        },
+        {
+          name: 'Нормальный',
+          val: false,
+          type: 'normal',
+          class: 'btn-warning'
+        },
+        {
+          name: 'Высокий',
+          val: false,
+          type: 'high',
+          class: 'btn-danger'
+        }
+      ],
       taskData:{
         header:{
           name: 'Название задачи',
@@ -163,16 +204,18 @@ export default {
     TodoSingle,
     VInput,
     VTextArea,
+    VCheckbox,
     VButton
   },
   computed:{
     ...mapState({
       activeUser: state => state.activeUser,
       userTodos: state => state.activeUser.todos,
-      searchVal: state => state.searchVal
+      priority: state => state.priority,
+      mode: state => state.modes.light.active ? state.modes.light : state.modes.dark
     }),
     ...mapGetters({
-      filteredTasks: 'GET_TASKS_BY_FILTERS'
+      filteredTasks: 'GET_TASKS_FILTERED',
     })
   },
   methods:{
@@ -190,7 +233,7 @@ export default {
           timeCreated: (format(new Date(), 'yyyy-MM-dd HH:mm:ss')),
           edited: false,
           done: false,
-          priority: false
+          priority: false,
         };
         this.taskData.header.value = '';
         this.taskData.description.value = '';
@@ -205,7 +248,7 @@ export default {
 
         this.$store.commit('SET_ACTIVE_USER_TO_STATE', activeUser)
         this.$store.commit('SET_USERS_TO_LOCALSTORAGE', users)
-        this.$store.commit('SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE', `<b>${this.$store.state.activeUser.login}</b> добавил новую задачу ${task.header}`)
+        this.$store.commit('SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE', `<b>${this.$store.state.activeUser.login}</b> добавил новую задачу <b>${task.header}</b>`)
       }
     },
     changeDirectionTasks(){
@@ -223,6 +266,9 @@ export default {
     },
     getValue(){
       this.$store.commit('SET_VALUE_BY_SEARCH', this.inputSearch.value)
+    },
+    changePriority(item){
+      this.$store.commit('SET_TYPE_PRIORITY', item.type)
     }
   },
   beforeCreate() {

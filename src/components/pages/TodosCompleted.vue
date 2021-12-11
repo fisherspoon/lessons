@@ -11,7 +11,7 @@
             <VCheckbox
                 :value="markDone.value"
                 :label="markDone.label"
-                :id="index"
+                :id="markDone.label"
                 @click.native="setChangedTask(index, true)"
             />
           </div>
@@ -61,7 +61,7 @@ export default {
 
         this.$store.commit('SET_USERS_TO_LOCALSTORAGE', users)
 
-      this.$store.commit('SET_USERS_ACTIVITY_TO_LOCALSTORAGE', ` <b>${this.$store.state.activeUser.login}</b> вернул статус задачи <b>${changedTask.header}</b> как невыполненный`)
+        this.$store.commit('SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE', ` <b>${this.$store.state.activeUser.login}</b> вернул статус задачи <b>${changedTask.header}</b> как невыполненный`)
     },
   },
   beforeCreate() {

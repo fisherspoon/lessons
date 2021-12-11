@@ -4,7 +4,7 @@
         @click="isShow = !isShow"
         class="selected-value form-control"
     >
-      {{ byDefault }}
+      {{ byDefault.name }}
 
       <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" width="25px" height="15px" viewBox="0 0 960 560" enable-background="new 0 0 960 560" xml:space="preserve">
         <g id="Rounded_Rectangle_33_copy_4_1_">
@@ -17,7 +17,7 @@
           v-for="(item, index) in options"
           :key="item + index"
           :data-value="item.value"
-          @click="changeValue(item)"
+          @click="changeValue(item); getSelectedOption(item)"
       >
         {{ item.name }}
       </li>
@@ -30,8 +30,7 @@
     name: 'VSelect',
     props:{
       byDefault:{
-        type: String,
-        default: 'Выберите значение'
+        type: Object,
       },
       options:{
         type: Array,
@@ -45,8 +44,11 @@
     },
     methods:{
       changeValue(item){
-        this.$emit('update:defaultProp', item.name)
+        this.$emit('update:defaultProp', item)
         this.isShow = false;
+      },
+      getSelectedOption(item){
+        this.$emit('getSelectedOption', item.value)
       }
     }
   }

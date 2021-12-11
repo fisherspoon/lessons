@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" :class="mode">
     <transition name="slide">
       <UserActivity v-show="isShowSidebar"/>
     </transition>
@@ -23,17 +23,24 @@ export default {
   },
   computed:{
     ...mapState({
-      isShowSidebar: state => state.isShowSidebar
+      isShowSidebar: state => state.isShowSidebar,
+      mode: state => state.activeMode
     })
   },
   components: {
     Menu,
     UserActivity
   },
+  beforeCreate() {
+    const body = document.querySelector('body');
+    this.mode === 'dark' ? body.classList.add('dark') : body.classList.add('light')
+  }
 }
 </script>
 
 <style lang="scss">
+@import "/assets/themes";
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

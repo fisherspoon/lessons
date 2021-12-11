@@ -45,23 +45,24 @@
               :name="btnShowControls.name"
               :custom-type="btnShowControls.type"
               :custom-class-btn="btnShowControls.class"
-              @click.native="isShowControls = !isShowControls"
+              @click.native="showEdit"
           />
         </template>
 
         <transition name="fade">
           <div v-if="isShowControls" class="controls-container">
             <VSelect
-              :defaultProp.sync="controls.priority.byDefault"
-              :by-default="controls.priority.byDefault"
+              :defaultProp.sync="selectPriorityDefault"
+              :by-default="selectPriorityDefault"
               :options="controls.priority.options"
+              @getSelectedOption="setChangedTask(index, 'selectPriority')"
             />
             <div class="is-done">
               <VCheckbox
                   :checked.sync="task[index].done"
                   :label="controls.markDone.label"
-                  :id="index"
-                  @click.native="setChangedTask(index, true)"
+                  :id="controls.markDone.label"
+                  @click.native="setChangedTask(index, 'isDone')"
               />
             </div>
             <div class="btns-container">
@@ -157,10 +158,9 @@ export default {
           class: 'btn-success'
         },
         priority:{
-          byDefault: 'Приоритетность',
           options:[
             {
-              value: 'good',
+              value: 'low',
               name: 'Не горит'
             },
             {
@@ -168,7 +168,7 @@ export default {
               name: 'Норм'
             },
             {
-              value: 'danger',
+              value: 'high',
               name: 'Нужно было сделать еще вчера'
             },
           ]
@@ -193,9 +193,25 @@ export default {
   },
   computed:{
     ...mapState({
-      task: state => state.activeUser.todos
-    })
+      task: state => state.activeUser.todos,
+    }),
+    selectPriorityDefault:{
+      get: function (){
+        if(!this.task[this.index].priority){
+          return {
+            value: '',
+            name: 'Выберите значение'
+          }
+        }else {
+          return this.task[this.index].priority
+        }
+      },
+      set: function (val){
+        this.task[this.index].priority = val
+      }
+    }
   },
+
   methods:{
     removeTask(indexTask){
       let idActiveUser = this.$route.params.id,
@@ -209,26 +225,33 @@ export default {
       this.$store.commit('SET_ACTIVE_USER_TO_STATE', activeUser)
       this.$store.commit('SET_USERS_TO_LOCALSTORAGE', users)
 
-      console.log('123123')
       this.$store.commit('SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE', `<b>${this.$store.state.activeUser.login}</b> удалил задачу <b>${taskHeader}</b>`)
+    },
+    showEdit(){
+      this.isShowControls = !this.isShowControls;
+      this.isShowControls ? this.btnShowControls.name = 'Скрыть' : this.btnShowControls.name = 'Действия'
     },
     editTask(){
       this.isEdited = !this.isEdited
     },
-    setChangedTask(indexTask, markDone){
+    setChangedTask(indexTask, additionalChanges){
       this.$v.$touch();
       if (!this.$v.$invalid) {
         let changedTask = this.task[indexTask];
 
-        if(!markDone){
+        if(additionalChanges === 'isDone'){
+          changedTask.done = true;
+          this.$store.commit('SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE', `<b>${this.$store.state.activeUser.login}</b> отметил задачу <b>${changedTask.header}</b> как выполненную`)
+        }
+        else if(additionalChanges === 'selectPriority'){
+          changedTask.priority = this.selectPriorityDefault
+          this.$store.commit('SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE', `<b>${this.$store.state.activeUser.login}</b> изменил приоритет задачи <b>${changedTask.header}</b> на `)
+        }
+        else{
           this.isEdited = false;
           this.isShowControls = false;
           changedTask.edited = true;
           this.$store.commit('SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE', `<b>${this.$store.state.activeUser.login}</b> внес изменения в задачу <b>${changedTask.header}</b>`)
-        }
-        else {
-          changedTask.done = true;
-          this.$store.commit('SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE', `<b>${this.$store.state.activeUser.login}</b> отметил задачу <b>${changedTask.header}</b> как выполненную`)
         }
 
         let idActiveUser = this.$route.params.id,

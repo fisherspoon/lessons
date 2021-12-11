@@ -63,7 +63,7 @@
 import VModal from "@/components/VModal";
 import VInput from "@/components/molecules/VInput";
 import VButton from "@/components/molecules/VButton";
-import { required, sameAs } from 'vuelidate/lib/validators'
+import { required, sameAs } from 'vuelidate/lib/validators';
 
 export default {
   name: "Registration",
