@@ -79,6 +79,34 @@ import VButton from "@/components/molecules/VButton";
 import VForm from "@/components/VForm";
 import VInput from "@/components/molecules/VInput";
 
+let defaultInputs = {
+  simpleInputName:{
+    typeInput: 'text',
+    value: '',
+    label: 'Имя'
+  },
+  simpleInputSurname:{
+    typeInput: 'text',
+    value: '',
+    label: 'Фамилия'
+  },
+  simpleInputAge:{
+    typeInput: 'text',
+    value: '18',
+    label: 'Возраст'
+  },
+  simpleInputCity:{
+    typeInput: 'text',
+    value: 'Днепр',
+    label: 'Город'
+  },
+  simpleInputProfession:{
+    typeInput: 'text',
+    value: '',
+    label: 'Профессия'
+  },
+}
+
 export default {
   name: "ThemeForm",
   provide() {
@@ -101,36 +129,11 @@ export default {
         inputBorder: '#fff',
         buttonBg: '#2b59b7'
       },
+      defaultFormData: JSON.parse(JSON.stringify(defaultInputs)),
       formWatch:{
         showAll: false,
         numberOfFieldsChange: 0,
-        inputs: {
-          simpleInputName:{
-            typeInput: 'text',
-            value: '',
-            label: 'Имя'
-          },
-          simpleInputSurname:{
-            typeInput: 'text',
-            value: '',
-            label: 'Фамилия'
-          },
-          simpleInputAge:{
-            typeInput: 'text',
-            value: '18',
-            label: 'Возраст'
-          },
-          simpleInputCity:{
-            typeInput: 'text',
-            value: 'Днепр',
-            label: 'Город'
-          },
-          simpleInputProfession:{
-            typeInput: 'text',
-            value: '',
-            label: 'Профессия'
-          },
-        },
+        inputs: defaultInputs,
         btnReset:{
           type: 'button',
           name: 'Очистить',
@@ -170,8 +173,10 @@ export default {
     },
     clearForm(iterObj){
       for(let key in iterObj){
-        iterObj[key].value = '';
-        delete iterObj[key].changed;
+        if(iterObj[key].value !== this.defaultFormData[key].value){
+          iterObj[key].value = this.defaultFormData[key].value
+          delete iterObj[key].changed;
+        }
       }
       this.$nextTick(() => {
         this.formWatch.numberOfFieldsChange = 0;
@@ -188,20 +193,16 @@ export default {
     }
   },
   watch:{
-    'formWatch.inputs.simpleInputName.value': function (){
-      this.markChange(this.formWatch.inputs.simpleInputName);
-    },
-    'formWatch.inputs.simpleInputSurname.value': function (){
-      this.markChange(this.formWatch.inputs.simpleInputSurname);
-    },
-    'formWatch.inputs.simpleInputAge.value': function (){
-      this.markChange(this.formWatch.inputs.simpleInputAge);
-    },
-    'formWatch.inputs.simpleInputCity.value': function (){
-      this.markChange(this.formWatch.inputs.simpleInputCity);
-    },
-    'formWatch.inputs.simpleInputProfession.value': function (){
-      this.markChange(this.formWatch.inputs.simpleInputProfession);
+    'formWatch.inputs':{
+      handler(){
+        return Object.keys( this.formWatch.inputs ).reduce((formData, field) => {
+          if (this.formWatch.inputs[ field ].value !== this.defaultFormData[field].value) {
+            this.markChange(this.formWatch.inputs[field]);
+          }
+          return formData;
+        }, {} );
+      },
+      deep: true
     }
   }
 }
