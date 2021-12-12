@@ -60,7 +60,7 @@
     </div>
 
     <div v-if="userTodos.length" class="row mb-3 mt-5">
-      <div class="col d-flex">
+      <div class="col d-flex search-container">
         <VInput
             :label="inputSearch.name"
             :value.sync="inputSearch.value"
@@ -73,7 +73,7 @@
     <div v-if="userTodos.length" class="row mb-3 mt-5">
       <div class="col d-flex">
         <div class="d-flex flex-column align-items-start">
-          <p>Отфильтровать по приоритетности</p>
+          <p class="filters-text">Отфильтровать по приоритетности</p>
           <div class="d-flex" style="grid-gap: 24px">
             <template v-for="item in btnsPriorities">
               <div class="d-flex">
@@ -91,8 +91,7 @@
     </div>
 
     <div class="row">
-          <div class="col">
-            <transition-group name="list" tag="div" :class="{'rows': activeUser.tasksDirection === 'row', 'cols': activeUser.tasksDirection === 'col'}">
+          <div class="col" :class="{'rows': activeUser.tasksDirection === 'row', 'cols': activeUser.tasksDirection === 'col'}">
               <template v-for="(item, index) in filteredTasks">
                   <TodoSingle
                       :key="index"
@@ -101,7 +100,6 @@
                       :index="index"
                   />
               </template>
-            </transition-group>
           </div>
         </div>
   </div>
@@ -226,6 +224,7 @@ export default {
     addTask(){
       this.$v.$touch();
       if (!this.$v.$invalid) {
+        this.$v.$reset();
         let task = {
           header: this.taskData.header.value,
           description: this.taskData.description.value,
@@ -245,6 +244,7 @@ export default {
 
         activeUser.todos.push(task);
         users.splice(idActiveUser, 1, activeUser);
+
 
         this.$store.commit('SET_ACTIVE_USER_TO_STATE', activeUser)
         this.$store.commit('SET_USERS_TO_LOCALSTORAGE', users)

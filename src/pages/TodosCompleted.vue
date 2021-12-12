@@ -2,21 +2,26 @@
   <div class="todos-completed-wrap">
     <router-link :to="`/todos/${this.$route.params.id}`">Просмотреть невыполненные</router-link>
     <div class="todos">
-      <template v-for="(item, index) in todosCompleted">
-        <div :key="index" class="card" style="width: 18rem;">
-          <img :src="item.url || 'https://www.kenyons.com/wp-content/uploads/2017/04/default-image-620x600.jpg'" class="card-img-top" alt="">
-          <div class="card-body">
-            <h5 class="card-title">{{ item.header }}</h5>
-            <p class="card-text">{{ item.description }}</p>
-            <VCheckbox
-                :value="markDone.value"
-                :label="markDone.label"
-                :id="markDone.label"
-                @click.native="setChangedTask(index, true)"
-            />
-          </div>
-        </div>
-      </template>
+          <template v-for="(item, index) in todosCompleted">
+            <transition
+                enter-active-class="animate__animated"
+                leave-active-class="animate__animated animate__backOutRight">
+                <div :key="index" class="card" style="width: 18rem;">
+                  <img :src="item.url || 'https://www.kenyons.com/wp-content/uploads/2017/04/default-image-620x600.jpg'" class="card-img-top" alt="">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ item.header }}</h5>
+                    <p class="card-text">{{ item.description }}</p>
+                    <VCheckbox
+                        :value="markDone.value"
+                        :label="markDone.label"
+                        :id="markDone.label"
+                        @click.native.prevent="setChangedTask(index, true)"
+                    />
+                  </div>
+                </div>
+            </transition>
+          </template>
+
     </div>
   </div>
 </template>
@@ -90,5 +95,54 @@ export default {
         }
       }
     }
+  }
+  @-webkit-keyframes backOutRight {
+    0% {
+      opacity: 1;
+      -webkit-transform: scale(1);
+      transform: scale(1)
+    }
+
+    20% {
+      opacity: .7;
+      -webkit-transform: translateX(0) scale(.7);
+      transform: translateX(0) scale(.7)
+    }
+
+    to {
+      opacity: .7;
+      -webkit-transform: translateX(2000px) scale(.7);
+      transform: translateX(2000px) scale(.7)
+    }
+  }
+
+  @keyframes backOutRight {
+    0% {
+      opacity: 1;
+      -webkit-transform: scale(1);
+      transform: scale(1)
+    }
+
+    20% {
+      opacity: .7;
+      -webkit-transform: translateX(0) scale(.7);
+      transform: translateX(0) scale(.7)
+    }
+
+    to {
+      opacity: .7;
+      -webkit-transform: translateX(2000px) scale(.7);
+      transform: translateX(2000px) scale(.7)
+    }
+  }
+
+  .animate__backOutRight {
+    -webkit-animation-name: backOutRight;
+    animation-name: backOutRight;
+  }
+
+  .animate__animated {
+    animation-duration: 1s;
+    animation-fill-mode: both
   }
 </style>

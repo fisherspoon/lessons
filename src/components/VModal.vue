@@ -1,13 +1,15 @@
 <template>
-  <div class="modal-overlay">
-    <div class="modal">
-      <div class="layer"  >
-        <div class="content">
-          <slot name="form"></slot>
+    <div class="modal-overlay">
+      <transition name="pop" appear>
+        <div class="modal">
+          <div class="layer">
+            <div class="content">
+              <slot name="form"></slot>
+            </div>
+          </div>
         </div>
-      </div>
+      </transition>
     </div>
-  </div>
 </template>
 
 <script>
@@ -25,7 +27,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .modal-overlay {
   content: "";
   position: fixed;
@@ -73,5 +75,20 @@ export default {
       padding: 24px 0;
     }
   }
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .4s linear;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+.pop-enter-active{
+  transition: all .3s ease;
+}
+.pop-leave-to, .pop-enter{
+  transform: translateX(200px);
+  opacity: 0;
 }
 </style>

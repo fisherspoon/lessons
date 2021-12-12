@@ -1,16 +1,76 @@
-.dark{
-  body{
-    background: #ccc;
+body.dark{
+  *{
+    transition: ease all .3s;
   }
-  .layer{
-    background-color: #6d6d6d;
+  background-color: #090909;
+  transition: ease background-color .3s;
+  .modal-overlay{
+    background-color: #090909;
+    .modal .layer{
+      background-color: #fff;
+      p:not(.error-text), label{
+        color: #090909;
+      }
+    }
+  }
+  .users-activity-wrapper{
+    background-color: #fff;
+    p{
+      color: #090909;
+    }
+  }
+  .wrapper-todos{
+    p:not(.error-text), label {
+      color: #fff!important;
+    }
+    .single-todo-wrapper{
+      background-color: #838383;
+    }
+  }
+  .todos-completed-wrap{
+    .card{
+      background-color: #fff;
+      p:not(.error-text), label, h5 {
+        color: #090909;
+      }
+    }
   }
 }
-.light{
-  body{
-    background: #fdfcfc;
+body.light{
+  *{
+    transition: ease all .3s;
   }
-  .layer{
-    background-color: #6d6d6d;
+  background-color: #fff;
+  transition: ease background-color .3s;
+  .modal-overlay{
+    background-color: #fff;
+    .modal .layer{
+      background-color: #000;
+      p:not(.error-text), label{
+        color: #fff;
+      }
+    }
+  }
+  .users-activity-wrapper{
+    background-color: #000;
+    p{
+      color: #fff;
+    }
+  }
+  .wrapper-todos{
+    p:not(.error-text), label {
+      color: #000!important;
+    }
+    .single-todo-wrapper{
+      background-color: #fff;
+    }
+  }
+  .todos-completed-wrap{
+    .card{
+      background-color: #000000;
+      p:not(.error-text), label, h5 {
+        color: #fff;
+      }
+    }
   }
 }

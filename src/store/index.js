@@ -42,6 +42,9 @@ export default new Vuex.Store({
         ['SET_ACTIVE_USER_TO_STATE'](state, payload){
             state.activeUser = payload
         },
+        ['SET_USER_AUTHENTICATE_ID_TO_LOCALSTORAGE'](state, payload){
+            localStorage.setItem('authenticate_id_user', JSON.stringify(payload));
+        },
         ['SET_VALUE_BY_SEARCH'](state, payload){
             state.searchVal = payload
         },
@@ -55,15 +58,7 @@ export default new Vuex.Store({
             state.usersActivity = payload
         },
         ['CHANGE_MODE'](state, payload){
-            console.log(payload)
             state.activeMode = payload
-            // if(payload === 'dark'){
-            //     state.modes.light.active = false
-            //     state.modes.dark.active = true
-            // }else {
-            //     state.modes.dark.active = false
-            //     state.modes.light.active = true
-            // }
         }
     },
     actions: {

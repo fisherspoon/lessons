@@ -22,7 +22,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   .users-activity-wrapper{
     display: flex;
     flex-direction: column;

@@ -1,9 +1,8 @@
 import VueRouter from "vue-router";
-import Registration from "@/components/pages/Registration";
-import Authorization from "@/components/pages/Authorization";
-import Todos from "@/components/pages/Todos";
-import TodosCompleted from "@/components/pages/TodosCompleted";
-import store from '@/store/index'
+import Registration from "@/pages/Registration";
+import Authorization from "@/pages/Authorization";
+import Todos from "@/pages/Todos";
+import TodosCompleted from "@/pages/TodosCompleted";
 
 export default new VueRouter({
     mode: 'history',
@@ -29,14 +28,24 @@ export default new VueRouter({
         {
             path: '/todos/:id',
             name: 'todos',
-            // beforeEach: (to, from, next) => {
-            //     console.log(store.state.todoByUser.currentUser.isAuthorized)
-            //     if (!store.state.todoByUser.currentUser.isAuthorized) next({ name: 'Registration' })
-            //     else next()
-            // },
             components: {
                 default: Todos
             },
+            beforeEnter: (to, from, next) => {
+                let idActiveUser = localStorage.getItem('authenticate_id_user');
+                console.log(idActiveUser)
+                if (to.matched.some(record => record.meta.requiresAuth)) {
+                    if (idActiveUser === null || to.params.id != idActiveUser) {
+                        next({ name: 'registration' });
+                    } else {
+                        next()
+                    }
+                } else {
+                    next()
+                }
+                next()
+            },
+            meta: { requiresAuth: true }
         },
         {
             path: "/todos/:id/todos-completed",

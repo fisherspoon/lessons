@@ -226,6 +226,7 @@ export default {
       this.$store.commit('SET_USERS_TO_LOCALSTORAGE', users)
 
       this.$store.commit('SET_USERS_ACTIVITY_TO_LOCALSTORAGE_AND_STATE', `<b>${this.$store.state.activeUser.login}</b> удалил задачу <b>${taskHeader}</b>`)
+      this.isShowControls = false;
     },
     showEdit(){
       this.isShowControls = !this.isShowControls;
@@ -238,6 +239,7 @@ export default {
       this.$v.$touch();
       if (!this.$v.$invalid) {
         let changedTask = this.task[indexTask];
+        this.btnShowControls.name = 'Действия'
 
         if(additionalChanges === 'isDone'){
           changedTask.done = true;
@@ -277,6 +279,7 @@ export default {
       display: flex;
       grid-gap: 24px;
       position: relative;
+      margin: 0!important;
       img{
         max-width: 200px;
         object-fit: cover;
@@ -402,7 +405,8 @@ export default {
 
   .animate__backOutRight {
     -webkit-animation-name: backOutRight;
-    animation-name: backOutRight
+    animation-name: backOutRight;
+    animation-duration: 1s;
   }
 
   .animate__animated {

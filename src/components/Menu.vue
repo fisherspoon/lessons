@@ -64,6 +64,7 @@ export default {
   methods:{
     goToAuthorization(){
       this.$router.push({ name: 'authorization'})
+      this.$store.commit('SET_USER_AUTHENTICATE_ID_TO_LOCALSTORAGE', null);
     },
     showActivityUsers(){
       this.$store.commit('SHOW_SIDE_BAR', !this.$store.state.isShowSidebar)

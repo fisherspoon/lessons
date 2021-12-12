@@ -23,6 +23,7 @@
               <p class="error-text mt-1">Поле не может быть пустым</p>
             </div>
             <p class="error-text" ref="notFoundUser">Пользователь с данным логином не существует</p>
+            <p class="error-text" ref="errorPassword">Неверный пароль</p>
           </div>
           <VButton
               :name="formAuthorization.button.name"
@@ -91,11 +92,20 @@ export default {
         users = JSON.parse(users)
 
         for(let i = 0; i < users.length; i++){
-          if(users[i].login === this.formAuthorization.login.value && users[i].password === this.formAuthorization.password.value){
-            this.$router.push({ name: 'todos', params: { id: users[i].id } });
+          if(users[i].login === this.formAuthorization.login.value){
+            if(users[i].password !== this.formAuthorization.password.value){
+              this.$refs.errorPassword.classList.add('show')
+              this.$refs.notFoundUser.classList.remove('show')
+              break;
+            }else {
+              this.$store.commit('SET_USER_AUTHENTICATE_ID_TO_LOCALSTORAGE', users[i].id);
+              this.$router.push({ name: 'todos', params: { id: users[i].id } });
+              break;
+            }
           }
           else{
             this.$refs.notFoundUser.classList.add('show')
+            this.$refs.errorPassword.classList.remove('show')
           }
         }
       }

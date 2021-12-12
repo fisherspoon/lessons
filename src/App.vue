@@ -39,7 +39,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "/assets/themes";
+@import '../src/assets/themes';
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

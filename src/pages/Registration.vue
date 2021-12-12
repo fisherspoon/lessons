@@ -149,6 +149,7 @@ export default {
         let users = JSON.parse(localStorage.getItem('users'));
         !users ? users = [userData] : users.push(userData)
 
+        this.$store.commit('SET_USER_AUTHENTICATE_ID_TO_LOCALSTORAGE', userData.id);
         this.$store.commit('SET_USERS_TO_LOCALSTORAGE', users)
         this.$router.push({ name: 'todos', params: { id: userData.id } });
       }
