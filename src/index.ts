@@ -22,7 +22,15 @@ type LevelAlias = {
 type GroupAlias = {
   name: string,
   description: string
-}
+};
+
+type StudentAlias = {
+  fullName: string;
+  age: number;
+  setGrade: (grade: number) => void;
+  setVisit: (isPresent: boolean) => void;
+  getPerformanceRating: () => number;
+};
 
 
 // =======================================================
@@ -246,66 +254,144 @@ console.log(level.groups);
 
 // =======================================================
 
+class Student {
+  private _firstName: string;
+  private _lastName: string;
+  private _birthYear: number;
+  private _grades: number[] = [];
+  private _visits: boolean[] = [];
+
+  constructor(firstName: string, lastName: string, birthYear: number) {
+    this._firstName = firstName;
+    this._lastName = lastName;
+    this._birthYear = birthYear;
+  }
+
+  get fullName(): string {
+    return `${this._lastName} ${this._firstName}`;
+  }
+
+  set fullName(value: string) {
+    [this._lastName, this._firstName] = value.split(" ");
+  }
+
+  get age(): number {
+    return new Date().getFullYear() - this._birthYear;
+  }
+
+  setGrade(grade: number): void {
+    this._grades.push(grade);
+  }
+
+  setVisit(isPresent: boolean): void {
+    this._visits.push(isPresent);
+  }
+
+  getPerformanceRating(): number {
+    const gradeValues = this._grades;
+
+    if (!gradeValues.length) return 0;
+
+    const averageGrade =
+      gradeValues.reduce((sum: number, grade: number) => sum + grade, 0) / gradeValues.length;
+    const attendancePercentage =
+      (this._visits.filter(present => present).length / this._visits.length) * 100;
+
+    return (averageGrade + attendancePercentage) / 2;
+  }
+}
 
 
-// class Group {
-//   // implement getters for fields and 'add/remove student' and 'set status' methods
+// створюємо студента
+const student1 = new Student("Іван", "Іванов", 2000);
+const student2 = new Student("Антоніна", "Антонівна", 1995);
 
-//   _area;
-//   _status;
-//   _students = []; // Modify the array so that it has a valid toSorted method*
+// Проставляємо грейди та відмітки
+student1.setGrade(85);
+student1.setGrade(90);
+student1.setVisit(true);
+student1.setVisit(false);
+student2.setGrade(80);
+student2.setGrade(75);
+student2.setVisit(true);
+student2.setVisit(true);
 
-//   constructor(directionName, levelName) {
-//     this.directionName = directionName;
-//     this.levelName = levelName;
-//   }
+// виводимо студента
+console.log(student1)
+console.log(student2)
 
-//   showPerformance() {
-//     const sortedStudents = this._students.toSorted(
-//       (a, b) => b.getPerformanceRating() - a.getPerformanceRating()
-//     );
-//     return sortedStudents;
-//   }
-// }
+// змінюємо фулл нейм та дату народження
+student1.fullName = "Джон Доу"
+console.log(student1)
 
-// class Student {
-//   // implement 'set grade' and 'set visit' methods
+// отримуємо рейтинг
+console.log(student1.getPerformanceRating())
+console.log(student2.getPerformanceRating())
 
-//   _firstName;
-//   _lastName;
-//   _birthYear;
-//   _grades = []; // workName: mark
-//   _visits = []; // lesson: present
 
-//   constructor(firstName, lastName, birthYear) {
-//     this._firstName = firstName;
-//     this._lastName = lastName;
-//     this._birthYear = birthYear;
-//   }
+class Group {
+  private _area: string = '';
+  private _status: boolean = false;
+  private _students: Student[] = [];
+  directionName: string;
+  levelName: string;
 
-//   get fullName() {
-//     return `${this._lastName} ${this._firstName}`;
-//   }
+  constructor(directionName: string, levelName: string) {
+    this.directionName = directionName;
+    this.levelName = levelName;
+  }
 
-//   set fullName(value) {
-//     [this._lastName, this._firstName] = value.split(" ");
-//   }
+  get area(): string {
+    return this._area;
+  }
 
-//   get age() {
-//     return new Date().getFullYear() - this._birthYear;
-//   }
+  set area(value: string) {
+    this._area = value;
+  }
 
-//   getPerformanceRating() {
-//     const gradeValues = Object.values(this._grades);
+  get status(): boolean {
+    return this._status;
+  }
 
-//     if (!gradeValues.length) return 0;
+  set status(value: boolean) {
+    this._status = value;
+  }
 
-//     const averageGrade =
-//       gradeValues.reduce((sum, grade) => sum + grade, 0) / gradeValues.length;
-//     const attendancePercentage =
-//       (this._visits.filter((present) => present).length / this._visits.length) *
-//       100;
+  addStudent(student: Student): void {
+    this._students.push(student);
+  }
 
-//     return (averageGrade + attendancePercentage) / 2;
-//   }
-// }
+  removeStudent(student: Student): void {
+    this._students = this._students.filter(s => s !== student);
+  }
+
+  showPerformance(): Student[] {
+    const sortedStudents = this._students.toSorted(
+      (a: Student, b: Student) => b.getPerformanceRating() - a.getPerformanceRating()
+    );
+    return sortedStudents;
+  }
+}
+
+// Створюэмо групу
+const group = new Group("Математика", "Продвинутий рівень");
+
+// Створюємо розташування та статус групи
+group.area = "Корпус A, кабінет 101";
+group.status = true;
+
+// Додаємо студента в групу
+group.addStudent(student1);
+group.addStudent(student2);
+
+console.log(group)
+
+// Вивиодимо перформанс всіх студентів у групі
+const performanceD = group.showPerformance();
+performanceD.forEach(student => {
+  console.log(`${student.fullName} (Вік: ${student.age}) - Рейтинг продуктивності: ${student.getPerformanceRating()}`);
+});
+
+// Видаляємо студента із групи
+group.removeStudent(student1);
+console.log(group);
