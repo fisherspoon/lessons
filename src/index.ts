@@ -1,173 +1,148 @@
-class School {
-  directions: any = [];
+// абстрактний клас для базових властивостей і методів
+abstract class Figure {
+  protected name: string = "";
+  protected color: string = "";
 
-  addDirection(direction: any): void {
-    this.directions.push(direction);
+  public constructor(name: string, color: string) {
+    this.name = name;
+    this.color = color;
+  }
+
+  public abstract calculateArea(): number;
+
+  public getName(): string {
+    return this.name;
+  }
+
+  public getColor(): string {
+    return this.color;
   }
 }
 
-class Direction {
-  levels: any = [];
-  private _name: string;
-
-  constructor(name: string) {
-    this._name = name;
+class Circle extends Figure {
+  private pi: number = 3.14;
+  
+  public constructor(private radius: number, name: string, color: string) {
+    super(name, color);
   }
 
-  get name(): string {
-    return this._name;
-  }
-
-  addLevel(level: any): void {
-    this.levels.push(level);
+  public calculateArea(): number {
+    return this.pi * this.radius * this.radius;
   }
 }
 
-class Level {
-  groups: any = [];
-  private _program: string;
-  private _name: string;
+// Створюємо екземпляр класу Circle
+let circle: Circle = new Circle(15, 'circle', 'red');
 
-  constructor(name: string, program: string) {
-    this._name = name;
-    this._program = program;
+// Пробуємо змінити name та color
+// circle.name = 'new name';
+// circle.color = 'new color';
+
+// Виводимо всі доступні властивості і площу круга
+console.log(circle.getName());
+console.log(circle.getColor());
+console.log(circle.calculateArea());
+
+
+
+// ========================================================================
+
+
+
+class Rectangle extends Figure {
+  public constructor(private height: number, private width: number, name: string, color: string) {
+    super(name, color);
   }
 
-  get name(): string {
-    return this._name;
-  }
-
-  get program(): string {
-    return this._program;
-  }
-
-  addGroup(group: any): void {
-    this.groups.push(group);
-  }
-}
-
-class Group {
-  private _students: any = [];
-  directionName: string = '';
-  levelName: string = '';
-
-  get students(): any {
-    return this._students;
-  }
-
-  constructor(directionName: string, levelName: string) {
-    this.directionName = directionName;
-    this.levelName = levelName;
-  }
-
-  addStudent(student: any): void {
-    this._students.push(student);
-  }
-
-  showPerformance(): any {
-    const sortedStudents: number = this.students.toSorted(
-      (a: any, b: any) => b.getPerformanceRating() - a.getPerformanceRating()
-    );
-    return sortedStudents;
+   public calculateArea(): number{
+    return this.height * this.width;
   }
 }
 
-class Student {
-  grades: any = {};
-  attendance: any = [];
-  firstName: string = '';
-  lastName: string = '';
-  birthYear: number = 0;
 
-  constructor(firstName: string, lastName: string, birthYear: number) {
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.birthYear = birthYear;
+// Створюємо екземпляр класу Circle
+let rectangle: Rectangle = new Rectangle(15, 12, 'rectangle', 'blue');
+
+// Пробуємо змінити name та color
+// rectangle.name = 'new name';
+// rectangle.color = 'new color';
+
+// Виводимо всі доступні властивості і площу круга
+console.log(rectangle.getName());
+console.log(rectangle.getColor());
+console.log(rectangle.calculateArea());
+
+
+
+// ========================================================================
+
+
+
+class Square extends Figure {
+  public constructor(private sideLength: number, name: string, color: string) {
+    super(name, color);
   }
 
-  get fullName(): string {
-    return `${this.lastName} ${this.firstName}`;
+  public calculateArea(): number{
+    return Math.pow(this.sideLength, 2);
   }
 
-  set fullName(value: string) {
-    [this.lastName, this.firstName] = value.split(' ');
-  }
-
-  get age(): number {
-    return new Date().getFullYear() - this.birthYear;
-  }
-
-  setGrade(subject: any, grade: number): void {
-    this.grades[subject] = grade;
-  }
-
-  markAttendance(present: boolean): void {
-    this.attendance.push(present);
-  }
-
-  getPerformanceRating(): number {
-    const gradeValues: any = Object.values(this.grades);
-
-    if (gradeValues.length === 0) return 0;
-
-    const averageGrade: number =
-      gradeValues.reduce((sum: number, grade: number) => sum + grade, 0) / gradeValues.length;
-    const attendancePercentage: number =
-      (this.attendance.filter((present: any) => present).length / this.attendance.length) * 100;
-
-    return (averageGrade + attendancePercentage) / 2;
+  public print(): string {
+    return `Формула розрахунку площі квадрату: 
+    S = a * a, 
+    де:
+    - S — площа квадрата,
+    - a — довжина сторони квадрата.`;
   }
 }
 
-// Створення студентів
-const student1 = new Student('Олексій', 'Олексійов', 2005);
-const student2 = new Student('Віктор', 'Вікторов', 2004);
-const student3 = new Student('Ольга', 'Ольгівна', 2005);
+// Створюємо екземпляр класу Square
+let square: Square = new Square(8, 'square', 'yellow');
 
-// Встановлення оцінок і відвідуваності
-student1.setGrade('Математика', 95);
-student1.setGrade('Англійська мова', 90);
-student1.markAttendance(true);
-student1.markAttendance(false);
-student1.markAttendance(true);
-console.log(student1.getPerformanceRating());
+// Пробуємо змінити name та color
+// square.name = 'new name';
+// square.color = 'new color';
 
-student2.setGrade('Математика', 85);
-student2.setGrade('Англійська мова', 80);
-student2.markAttendance(true);
-student2.markAttendance(true);
-student2.markAttendance(true);
-console.log(student2.getPerformanceRating());
+// Виводимо всі доступні властивості і площу круга
+console.log(square.getName());
+console.log(square.getColor());
+console.log(square.calculateArea());
+console.log(square.print());
 
-student3.setGrade('Математика', 92);
-student3.setGrade('Англійська мова', 88);
-student3.markAttendance(true);
-student3.markAttendance(true);
-student3.markAttendance(false);
-console.log(student3.getPerformanceRating());
 
-// Створення групи і додавання студентів
-const mathGroup = new Group('Математична група', 'Рівень 1');
-mathGroup.addStudent(student1);
-mathGroup.addStudent(student2);
-mathGroup.addStudent(student3);
+// ========================================================================
 
-// Створення рівня і додавання групи
-const level1 = new Level('Рівень 1', 'Базова математика');
-level1.addGroup(mathGroup);
-console.log(level1.name);
-console.log(level1.groups);
 
-// Створення напрямку і додавання рівня
-const mathDirection = new Direction('Вища математика');
-mathDirection.addLevel(level1);
-console.log(mathDirection.name);
 
-// Створення школи і додавання напрямку
-const school = new School();
-school.addDirection(mathDirection);
-console.log(school);
+class Triangle extends Figure{
+  public constructor(private sideA: number, private sideB: number, private sideC: number, name: string, color: string) {
+    super(name, color);
+  }
 
-// Показ продуктивності студентів у групі
-const sortedStudents = mathGroup.showPerformance();
-console.log(sortedStudents);
+  public calculateArea(): number{
+    let s: number = (this.sideA + this.sideB + this.sideC) / 2;
+    return Math.sqrt(s * ((s - this.sideA) * (s - this.sideB) * (s - this.sideC)));
+  }
+
+  public print(): string{
+    return `Формула розрахунку площі трикутника: 
+    S = √(s * (s - a) * (s - b) * (s - c)), 
+    де:
+    - S — площа трикутника,
+    - s — півпериметр трикутника (s = (a + b + c) / 2),
+    - a, b, c — сторони трикутника.`;
+  }
+}
+
+// Створюємо екземпляр класу Triangle
+let triangle: Triangle = new Triangle(8, 6, 7, 'triangle', 'white');
+
+// Пробуємо змінити name та color
+// triangle.name = 'new name';
+// triangle.color = 'new color';
+
+// Виводимо всі доступні властивості і площу круга
+console.log(triangle.getName());
+console.log(triangle.getColor());
+console.log(triangle.calculateArea());
+console.log(triangle.print());
